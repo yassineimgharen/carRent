@@ -1,0 +1,89 @@
+Conversation Summary
+Initial Setup Issues : User encountered Node.js version incompatibility (v12) and disk space issues. Installed nvm and upgraded to Node 18. Cleared npm cache and redirected cache to /goinfre partition.
+
+Dark/Light Mode : Added theme toggle with ThemeProvider context, CSS variables for both themes, and Sun/Moon toggle button in Navbar.
+
+User Profile System : Implemented complete authentication system with JWT, user registration with extended fields (first_name, last_name, phone, city), profile page with edit functionality, and admin role system.
+
+Backend Migration from Supabase to Custom : Replaced Supabase with Node.js + Express + SQLite backend. Created complete REST API with routes for auth, cars, bookings, and users. Implemented JWT authentication middleware.
+
+Database Schema : SQLite database with tables: users, cars, car_images, bookings. Seeded 6 cars with 3 images each using Unsplash URLs.
+
+Admin Dashboard : Protected admin-only page with car and booking management. Admin link only visible to users with role='admin'. Created admin user ( / admin1234).
+
+Car Images Gallery : Added car_images table and API endpoint to support multiple images per car with slider functionality using CarGallery component.
+
+Booking System : Fixed booking validation to check date conflicts instead of is_available flag. Cast car_id to number to fix SQLite type mismatch.
+
+Location Map : Added Leaflet map component showing exact business location in Agadir (30.40607, -9.562928) with clickable marker that opens Google Maps for directions.
+
+Files and Code Summary
+/goinfre/yaimghar/wheelie-happy-car/server/ : Complete Express backend
+
+index.js : Main server file with CORS allowing all localhost ports, routes mounted at /api
+
+db.js : SQLite database setup with tables for users, cars, car_images, bookings. Seeds 6 cars with 3 images each
+
+routes/auth.js : Register/login endpoints with bcrypt password hashing and JWT token generation
+
+routes/cars.js : CRUD operations for cars, GET /cars/:id/images endpoint for car gallery
+
+routes/bookings.js : Booking creation with date conflict checking, admin-only endpoints for viewing all bookings
+
+routes/users.js : GET/PUT /users/me for profile management
+
+middleware/auth.js : JWT verification middleware and adminOnly guard
+
+/goinfre/yaimghar/wheelie-happy-car/src/lib/api.ts : Fetch wrapper that auto-attaches JWT token from localStorage
+
+/goinfre/yaimghar/wheelie-happy-car/src/lib/supabase-helpers.ts : Rewritten to call Express API instead of Supabase. Exports fetchCars, fetchCarById, fetchCarImages, fetchBookings, createBooking, etc.
+
+/goinfre/yaimghar/wheelie-happy-car/src/hooks/use-auth.tsx : JWT-based auth context with login, register, signOut functions. Stores token in localStorage.
+
+/goinfre/yaimghar/wheelie-happy-car/src/hooks/use-theme.tsx : Theme context with localStorage persistence and .light class toggle
+
+/goinfre/yaimghar/wheelie-happy-car/src/components/AuthModal.tsx : Login/signup modal with validation (email regex, 8+ char password, phone format)
+
+/goinfre/yaimghar/wheelie-happy-car/src/components/Navbar.tsx : Shows admin link only for admin users, avatar dropdown with profile/logout
+
+/goinfre/yaimghar/wheelie-happy-car/src/components/LocationMap.tsx : Leaflet map with marker at Agadir location, popup with "Get Directions" button linking to Google Maps
+
+/goinfre/yaimghar/wheelie-happy-car/src/pages/AdminPage.tsx : Protected with Navigate redirect if not admin, manages cars and bookings
+
+/goinfre/yaimghar/wheelie-happy-car/src/pages/ProfilePage.tsx : Shows user info from DB with inline edit mode, displays user's bookings
+
+/goinfre/yaimghar/wheelie-happy-car/src/pages/CarDetailsPage.tsx : Fetches car images from API and passes to CarGallery component
+
+/goinfre/yaimghar/wheelie-happy-car/src/index.css : Added light mode CSS variables, imported Leaflet CSS
+
+Key Insights
+INSIGHT : User is on 42 school machine with limited /home space, uses /goinfre partition for npm cache
+
+INSIGHT : Project uses React 18, requires Node 18+ (not 19 due to react-leaflet compatibility)
+
+INSIGHT : SQLite uses INTEGER (0/1) for booleans, not true/false - required type casting in frontend checks
+
+INSIGHT : Admin credentials: / admin1234, role='admin' in users table
+
+INSIGHT : Business location: شارع احمد زكرياء رقم 132 بلوك ابطيح تمديد الداخلة, Agadir, Morocco (30.40607, -9.562928)
+
+INSIGHT : Business email:
+
+INSIGHT : Backend runs on port 4000, frontend on port 8082 (Vite auto-selected)
+
+INSIGHT : Car images stored in car_images table with display_order, each car has 3 Unsplash images
+
+INSIGHT : Booking date conflicts checked via SQL query: start_date <= end_date AND end_date >= start_date
+
+Most Recent Topic
+Topic : Adding interactive map with Google Maps directions link
+Progress : Successfully added Leaflet map component to homepage showing exact business location in Agadir. Map includes clickable marker with popup containing business name and "Get Directions" button that opens Google Maps in new tab with coordinates for navigation.
+Tools Used :
+
+npm install : Installed and leaflet with --legacy-peer-deps flag due to React 18 compatibility
+
+fsWrite : Created LocationMap.tsx component with MapContainer, TileLayer, Marker, and Popup. Configured marker at coordinates [30.40607, -9.562928] extracted from Google Maps embed URL
+
+fsReplace : Added LocationMap import and component to Index.tsx homepage, imported Leaflet CSS in index.css, updated popup to include "Get Directions" link opening https://www.google.com/maps?q=30.40607,-9.562928
+
+Final state : Map displays on homepage with Arabic address (شارع احمد زكرياء رقم 132 بلوك ابطيح تمديد الداخلة), email (), and hours. Clicking marker shows popup with button to open Google Maps for navigation directions.
