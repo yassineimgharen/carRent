@@ -33,6 +33,7 @@ db.exec(`
     transmission TEXT NOT NULL DEFAULT 'Automatic',
     fuel_type TEXT NOT NULL DEFAULT 'Gasoline',
     is_available INTEGER NOT NULL DEFAULT 1,
+    is_featured INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
@@ -60,21 +61,31 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    message TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'unread',
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `);
 
 // Seed cars if empty
 const count = db.prepare("SELECT COUNT(*) as c FROM cars").get();
 if (count.c === 0) {
   const insertCar = db.prepare(`
-    INSERT INTO cars (name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available)
-    VALUES (@name, @brand, @category, @price_per_day, @image_url, @description, @seats, @transmission, @fuel_type, @is_available)
+    INSERT INTO cars (name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured)
+    VALUES (@name, @brand, @category, @price_per_day, @image_url, @description, @seats, @transmission, @fuel_type, @is_available, @is_featured)
   `);
   const insertImg = db.prepare(`INSERT INTO car_images (car_id, image_url, display_order) VALUES (?, ?, ?)`);
 
   const cars = [
     {
       name: "Model 3", brand: "Tesla", category: "Electric", price_per_day: 120,
-      description: "Premium electric sedan with autopilot", seats: 5, transmission: "Automatic", fuel_type: "Electric", is_available: 1,
+      description: "Premium electric sedan with autopilot", seats: 5, transmission: "Automatic", fuel_type: "Electric", is_available: 1, is_featured: 1,
       image_url: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80",
@@ -84,7 +95,7 @@ if (count.c === 0) {
     },
     {
       name: "Mustang GT", brand: "Ford", category: "Sports", price_per_day: 150,
-      description: "Iconic American muscle car", seats: 4, transmission: "Manual", fuel_type: "Gasoline", is_available: 1,
+      description: "Iconic American muscle car", seats: 4, transmission: "Manual", fuel_type: "Gasoline", is_available: 1, is_featured: 1,
       image_url: "https://images.unsplash.com/photo-1584345604476-8ec5f452d1f2?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1584345604476-8ec5f452d1f2?w=800&q=80",
@@ -94,7 +105,7 @@ if (count.c === 0) {
     },
     {
       name: "X5", brand: "BMW", category: "SUV", price_per_day: 180,
-      description: "Luxury SUV with all-wheel drive", seats: 7, transmission: "Automatic", fuel_type: "Diesel", is_available: 1,
+      description: "Luxury SUV with all-wheel drive", seats: 7, transmission: "Automatic", fuel_type: "Diesel", is_available: 1, is_featured: 1,
       image_url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80",
@@ -104,7 +115,7 @@ if (count.c === 0) {
     },
     {
       name: "Civic", brand: "Honda", category: "Sedan", price_per_day: 60,
-      description: "Reliable and fuel-efficient", seats: 5, transmission: "Automatic", fuel_type: "Gasoline", is_available: 1,
+      description: "Reliable and fuel-efficient", seats: 5, transmission: "Automatic", fuel_type: "Gasoline", is_available: 1, is_featured: 0,
       image_url: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80",
@@ -114,7 +125,7 @@ if (count.c === 0) {
     },
     {
       name: "Range Rover", brand: "Land Rover", category: "Luxury", price_per_day: 250,
-      description: "Ultimate luxury off-roader", seats: 5, transmission: "Automatic", fuel_type: "Diesel", is_available: 1,
+      description: "Ultimate luxury off-roader", seats: 5, transmission: "Automatic", fuel_type: "Diesel", is_available: 1, is_featured: 0,
       image_url: "https://images.unsplash.com/photo-1519245659620-e859806a8d3b?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1519245659620-e859806a8d3b?w=800&q=80",
@@ -124,7 +135,7 @@ if (count.c === 0) {
     },
     {
       name: "Clio", brand: "Renault", category: "Compact", price_per_day: 45,
-      description: "Compact city car", seats: 5, transmission: "Manual", fuel_type: "Gasoline", is_available: 1,
+      description: "Compact city car", seats: 5, transmission: "Manual", fuel_type: "Gasoline", is_available: 1, is_featured: 0,
       image_url: "https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&q=80",
       images: [
         "https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&q=80",

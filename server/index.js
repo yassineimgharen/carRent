@@ -14,6 +14,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/cars", require("./routes/cars"));
 app.use("/api/bookings", require("./routes/bookings"));
 app.use("/api/users", require("./routes/users"));
+app.use("/api/contact", require("./routes/contact"));
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
 

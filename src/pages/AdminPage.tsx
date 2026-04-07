@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp } from "lucide-react";
+import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import { api } from "@/lib/api";
 const emptyForm = {
   name: "", brand: "", category: "Sedan", price_per_day: 0,
   image_url: "", description: "", seats: 5, transmission: "Automatic",
-  fuel_type: "Gasoline", is_available: 1,
+  fuel_type: "Gasoline", is_available: 1, is_featured: 0,
 };
 
 const AdminPage = () => {
@@ -47,6 +47,10 @@ const AdminPage = () => {
   const { data: bookings } = useQuery({ queryKey: ["bookings"], queryFn: fetchBookings });
   const { data: users } = useQuery({ queryKey: ["users"], queryFn: fetchAllUsers });
   const { data: analytics } = useQuery({ queryKey: ["analytics"], queryFn: fetchAnalytics });
+  const { data: messages } = useQuery({ 
+    queryKey: ["contact-messages"], 
+    queryFn: () => api("/contact"),
+  });
 
   const carMutation = useMutation({
     mutationFn: async (carData: any) => {
@@ -77,6 +81,17 @@ const AdminPage = () => {
   const deleteBookingMutation = useMutation({
     mutationFn: (id: number) => deleteBooking(id),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["bookings"] }); toast.success("Booking deleted"); },
+  });
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: (id: number) => api(`/contact/${id}`, { method: "DELETE" }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["contact-messages"] }); toast.success("Message deleted"); },
+  });
+
+  const updateMessageStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => 
+      api(`/contact/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["contact-messages"] }); toast.success("Status updated"); },
   });
 
   const statusMutation = useMutation({
@@ -112,7 +127,7 @@ const AdminPage = () => {
   });
 
   const openEdit = (car: Car) => {
-    setFormData({ id: car.id, name: car.name, brand: car.brand, category: car.category, price_per_day: car.price_per_day, image_url: car.image_url || "", description: car.description || "", seats: car.seats, transmission: car.transmission, fuel_type: car.fuel_type, is_available: car.is_available });
+    setFormData({ id: car.id, name: car.name, brand: car.brand, category: car.category, price_per_day: car.price_per_day, image_url: car.image_url || "", description: car.description || "", seats: car.seats, transmission: car.transmission, fuel_type: car.fuel_type, is_available: car.is_available, is_featured: (car as any).is_featured || 0 });
     setUploadedImages([]);
     setDialogOpen(true);
   };
@@ -177,6 +192,7 @@ const AdminPage = () => {
             <TabsTrigger value="cars">Cars ({cars?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="bookings">Bookings ({bookings?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="users">Users ({users?.length ?? 0})</TabsTrigger>
+            <TabsTrigger value="messages">Messages ({messages?.filter((m: any) => m.status === 'unread').length ?? 0})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-6">
@@ -332,6 +348,10 @@ const AdminPage = () => {
                   <div className="flex items-center gap-3">
                     <Switch checked={!!formData.is_available} onCheckedChange={(v) => set("is_available", v ? 1 : 0)} />
                     <Label>Available</Label>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Switch checked={!!formData.is_featured} onCheckedChange={(v) => set("is_featured", v ? 1 : 0)} />
+                    <Label>Featured on Homepage</Label>
                   </div>
                   <Button type="submit" className="w-full rounded-full font-display" disabled={carMutation.isPending}>
                     {carMutation.isPending ? "Saving..." : "Save Car"}
@@ -735,6 +755,74 @@ const AdminPage = () => {
                 )}
               </DialogContent>
             </Dialog>
+          </TabsContent>
+
+          <TabsContent value="messages" className="space-y-4">
+            <div className="glass-card overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/50">
+                    <TableHead>From</TableHead>
+                    <TableHead>Message</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(messages ?? []).map((msg: any) => (
+                    <TableRow key={msg.id} className="border-border/30">
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{msg.name}</p>
+                          <p className="text-xs text-muted-foreground">{msg.email}</p>
+                          {msg.phone && <p className="text-xs text-muted-foreground">{msg.phone}</p>}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-md">
+                        <p className="text-sm line-clamp-2">{msg.message}</p>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(msg.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Select 
+                          value={msg.status} 
+                          onValueChange={(v) => updateMessageStatusMutation.mutate({ id: msg.id, status: v })}
+                        >
+                          <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unread">Unread</SelectItem>
+                            <SelectItem value="read">Read</SelectItem>
+                            <SelectItem value="replied">Replied</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => window.open(`mailto:${msg.email}?subject=Re: Your message to DriveX&body=Hi ${msg.name},%0D%0A%0D%0A`, '_blank')}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-destructive" 
+                          onClick={() => deleteMessageMutation.mutate(msg.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {(!messages || messages.length === 0) && (
+                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No messages yet</TableCell></TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

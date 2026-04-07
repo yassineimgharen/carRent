@@ -8,13 +8,15 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import CarCard from "@/components/CarCard";
 import LocationMap from "@/components/LocationMap";
+import ContactSection from "@/components/ContactSection";
+import Footer from "@/components/Footer";
 import { fetchCars } from "@/lib/supabase-helpers";
 
 const Index = () => {
   const { data: cars } = useQuery({ queryKey: ["cars"], queryFn: fetchCars });
   const { t } = useLanguage();
 
-  const featured = cars?.filter((c) => c.is_available === 1).slice(0, 3) ?? [];
+  const featured = cars?.filter((c) => c.is_featured === 1) ?? [];
 
   return (
     <div className="min-h-screen">
@@ -50,12 +52,9 @@ const Index = () => {
 
       <LocationMap />
 
-      {/* Footer */}
-      <footer className="border-t border-border/50 py-8">
-        <div className="container text-center text-sm text-muted-foreground">
-          {t('home.footer')}
-        </div>
-      </footer>
+      <ContactSection />
+
+      <Footer />
     </div>
   );
 };

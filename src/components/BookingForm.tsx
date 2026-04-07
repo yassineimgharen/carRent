@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, differenceInDays } from "date-fns";
 import { CalendarIcon, Banknote, CreditCard, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/hooks/use-language";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -14,6 +15,7 @@ import { createBooking, type Car } from "@/lib/supabase-helpers";
 
 const BookingForm = ({ car }: { car: Car }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const [name, setName] = useState("");
@@ -21,6 +23,14 @@ const BookingForm = ({ car }: { car: Car }) => {
   const [phone, setPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      setName(fullName || user.email);
+      setEmail(user.email);
+    }
+  }, [user]);
 
   const days = startDate && endDate ? Math.max(differenceInDays(endDate, startDate), 1) : 0;
   const total = days * car.price_per_day;
@@ -111,7 +121,7 @@ const BookingForm = ({ car }: { car: Car }) => {
       </div>
       <div className="space-y-2">
         <Label>Phone</Label>
-        <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 234 567 890" />
+        <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+212 XXX XXX XXX" />
       </div>
 
       <div className="space-y-3">

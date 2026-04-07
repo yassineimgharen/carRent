@@ -41,7 +41,7 @@ const Navbar = () => {
         <div className="container flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold">
             <Car className="h-6 w-6 text-primary" />
-            <span className="text-gradient">DriveX</span>
+            <span className="text-gradient">Sihabi Cars</span>
           </Link>
 
           {/* Desktop */}
