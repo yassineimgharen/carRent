@@ -1,0 +1,31 @@
+Homepage additions
+
+How It Works — 3 steps: Choisissez → Réservez → Prenez la route. Simple icons, builds trust for first-time visitors
+
+Why Choose Us — 4 cards: Prix transparents, Véhicules assurés, Support réactif, Paiement flexible
+
+Customer Testimonials — 3 review cards with stars, name, city
+
+Floating WhatsApp button — fixed bottom-right bubble on every page, one tap to contact
+
+Cars & Booking
+5. Availability calendar — show booked dates on the car details page so users know when it's free
+6. Similar cars — show 3 related cars at the bottom of each car details page
+7. Price badge "Best Value" — tag the cheapest available car automatically
+
+User Experience
+8. Booking confirmation email — send an email to the customer after booking (needs nodemailer on backend)
+9. Booking status page — user can track their booking status (pending/confirmed/completed) from profile
+10. Dark/Light mode toggle — if not already working properly
+
+Admin
+11. Export bookings to CSV — one button to download all bookings as a spreadsheet
+12. Low availability alert — highlight cars with 0 bookings or mark them as needing attention
+
+My top picks for your Moroccan rental audience:
+
+1 + 2 (trust building on homepage)
+
+4 (floating WhatsApp — huge for Morocco)
+
+8 (booking confirmation email — very professional)

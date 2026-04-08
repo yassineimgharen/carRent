@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateMe } from "@/lib/supabase-helpers";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { updateMe, fetchMyBookings } from "@/lib/supabase-helpers";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Navigate } from "react-router-dom";
-import { User, Pencil, Check, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Navigate, Link } from "react-router-dom";
+import { User, Pencil, Check, X, Car, Calendar, CreditCard } from "lucide-react";
 
 const ProfilePage = () => {
   const { user, loading } = useAuth();
@@ -21,6 +22,8 @@ const ProfilePage = () => {
     mutationFn: () => updateMe(form),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["me"] }); setEditing(false); },
   });
+
+  const { data: bookings } = useQuery({ queryKey: ["my-bookings"], queryFn: fetchMyBookings });
 
   if (loading) return null;
   if (!user) return <Navigate to="/" replace />;
@@ -81,6 +84,77 @@ const ProfilePage = () => {
                   <p>{value ?? <span className="italic text-muted-foreground">—</span>}</p>
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Bookings */}
+        <div className="mt-8 space-y-4">
+          <h2 className="font-display text-xl font-bold">{t('profile.myBookings')}</h2>
+          {(!bookings || bookings.length === 0) ? (
+            <div className="glass-card p-10 text-center text-muted-foreground">
+              <Car className="h-10 w-10 mx-auto mb-3 opacity-30" />
+              <p>{t('profile.noBookings')}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {bookings.map((b: any) => {
+                const statusColor = {
+                  pending: "border-amber-500/30 text-amber-400 bg-amber-500/10",
+                  confirmed: "border-blue-500/30 text-blue-400 bg-blue-500/10",
+                  completed: "border-success/30 text-success bg-success/10",
+                }[b.status as string] ?? "border-border text-muted-foreground";
+
+                const steps = ["pending", "confirmed", "completed"];
+                const stepIdx = steps.indexOf(b.status);
+
+                return (
+                  <div key={b.id} className="glass-card p-5 space-y-4">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div>
+                        <p className="text-xs text-muted-foreground">{t('profile.bookingId')}{b.id}</p>
+                        <Link to={`/cars/${b.car_id}`} className="font-display font-semibold hover:text-primary transition-colors">
+                          {b.car_brand} {b.car_name}
+                        </Link>
+                      </div>
+                      <Badge variant="outline" className={statusColor}>
+                        {t(`profile.status.${b.status}`)}
+                      </Badge>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="flex items-center gap-2">
+                      {steps.map((step, i) => (
+                        <div key={step} className="flex items-center gap-2 flex-1">
+                          <div className={`h-2 flex-1 rounded-full transition-all ${
+                            i <= stepIdx ? "bg-primary" : "bg-secondary"
+                          }`} />
+                          {i < steps.length - 1 && null}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      {steps.map((step) => (
+                        <span key={step}>{t(`profile.status.${step}`)}</span>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 text-sm pt-1 border-t border-border/40">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Calendar className="h-3.5 w-3.5 shrink-0" />
+                        <span>{b.start_date} → {b.end_date}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <CreditCard className="h-3.5 w-3.5 shrink-0" />
+                        <span>{t(`admin.${b.payment_method}`)}</span>
+                      </div>
+                      <div className="text-right font-display font-bold text-primary">
+                        {b.total_price} {t('currency')}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
