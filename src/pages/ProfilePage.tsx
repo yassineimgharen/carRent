@@ -139,16 +139,16 @@ const ProfilePage = () => {
                       ))}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 text-sm pt-1 border-t border-border/40">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm pt-1 border-t border-border/40">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-3.5 w-3.5 shrink-0" />
-                        <span>{b.start_date} → {b.end_date}</span>
+                        <span className="whitespace-nowrap">{b.start_date} → {b.end_date}</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <CreditCard className="h-3.5 w-3.5 shrink-0" />
                         <span>{t(`admin.${b.payment_method}`)}</span>
                       </div>
-                      <div className="text-right font-display font-bold text-primary">
+                      <div className="sm:text-right font-display font-bold text-primary">
                         {b.total_price} {t('currency')}
                       </div>
                     </div>

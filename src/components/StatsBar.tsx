@@ -19,7 +19,7 @@ const StatsBar = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="glass-card grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-border/40"
+        className="glass-card grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-border/40 pr-4 md:pr-0"
       >
         {stats.map(({ icon: Icon, value, label }, i) => (
           <motion.div
@@ -28,7 +28,7 @@ const StatsBar = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="flex items-center gap-4 p-6"
+            className="flex items-center gap-4 p-6 pr-8"
           >
             <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
               <Icon className="h-5 w-5 text-primary" />

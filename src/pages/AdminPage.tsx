@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare } from "lucide-react";
+import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,6 +135,26 @@ const AdminPage = () => {
   };
 
   const openNew = () => { setFormData(emptyForm); setUploadedImages([]); setDialogOpen(true); };
+
+  const exportCSV = () => {
+    const rows = (bookings ?? []) as any[];
+    if (!rows.length) return toast.error("No bookings to export");
+    const headers = ["ID", "Customer", "Email", "Phone", "Car", "Start Date", "End Date", "Total (DH)", "Payment", "Status", "Booked On"];
+    const csv = [
+      headers.join(","),
+      ...rows.map((b) => [
+        b.id, `"${b.customer_name}"`, b.customer_email, b.customer_phone || "",
+        `"${b.car_brand} ${b.car_name}"`, b.start_date, b.end_date,
+        b.total_price, b.payment_method, b.status,
+        new Date(b.created_at).toLocaleDateString(),
+      ].join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `bookings-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
   const set = (key: string, value: unknown) => setFormData((prev: any) => ({ ...prev, [key]: value }));
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +209,23 @@ const AdminPage = () => {
         <h1 className="font-display text-3xl font-bold">{t('admin.title')}</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-secondary">
+          {/* Mobile: select dropdown */}
+          <div className="md:hidden">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="analytics">{t('admin.analytics')}</SelectItem>
+                <SelectItem value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</SelectItem>
+                <SelectItem value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</SelectItem>
+                <SelectItem value="users">{t('admin.usersTab')} ({users?.length ?? 0})</SelectItem>
+                <SelectItem value="messages">{t('admin.messagesTab')} ({messages?.filter((m: any) => m.status === 'unread').length ?? 0})</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Desktop: tabs */}
+          <TabsList className="hidden md:flex bg-secondary">
             <TabsTrigger value="analytics">{t('admin.analytics')}</TabsTrigger>
             <TabsTrigger value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</TabsTrigger>
@@ -370,7 +406,7 @@ const AdminPage = () => {
                     <TableHead>{t('admin.category')}</TableHead>
                     <TableHead>{t('admin.price')}</TableHead>
                     <TableHead>{t('admin.status')}</TableHead>
-                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
+                    <TableHead className="text-center">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -388,15 +424,17 @@ const AdminPage = () => {
                         </div>
                       </TableCell>
                       <TableCell><Badge variant="secondary">{car.category}</Badge></TableCell>
-                      <TableCell className="font-display font-semibold">{car.price_per_day} {t('currency')}</TableCell>
+                      <TableCell className="font-display font-semibold whitespace-nowrap">{car.price_per_day}{t('currency')}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={car.is_available ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
                           {car.is_available ? t('admin.available') : t('admin.unavailable')}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(car)}><Pencil className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteCarMutation.mutate(car.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex justify-center gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => openEdit(car)}><Pencil className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteCarMutation.mutate(car.id)}><Trash2 className="h-4 w-4" /></Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -416,16 +454,21 @@ const AdminPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
               />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  qc.invalidateQueries({ queryKey: ["bookings"] });
-                  qc.invalidateQueries({ queryKey: ["analytics"] });
-                }}
-              >
-                {t('admin.refresh')}
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={exportCSV}>
+                  <Download className="mr-2 h-4 w-4" /> Export CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    qc.invalidateQueries({ queryKey: ["bookings"] });
+                    qc.invalidateQueries({ queryKey: ["analytics"] });
+                  }}
+                >
+                  {t('admin.refresh')}
+                </Button>
+              </div>
             </div>
             <div className="glass-card overflow-hidden">
               <Table>
@@ -437,7 +480,7 @@ const AdminPage = () => {
                     <TableHead>{t('admin.total')}</TableHead>
                     <TableHead>{t('admin.payment')}</TableHead>
                     <TableHead>{t('admin.status')}</TableHead>
-                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
+                    <TableHead className="text-center">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -448,8 +491,11 @@ const AdminPage = () => {
                         <p className="text-xs text-muted-foreground">{b.customer_email}</p>
                       </TableCell>
                       <TableCell>{b.car_brand} {b.car_name}</TableCell>
-                      <TableCell className="text-sm">{b.start_date} → {b.end_date}</TableCell>
-                      <TableCell className="font-display font-semibold">{b.total_price} {t('currency')}</TableCell>
+                      <TableCell className="text-sm whitespace-nowrap">
+                        <p>{b.start_date}</p>
+                        <p>{b.end_date}</p>
+                      </TableCell>
+                      <TableCell className="font-display font-semibold whitespace-nowrap">{b.total_price}{t('currency')}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={b.payment_method === "cash" ? "border-amber-500/30 text-amber-400" : "border-blue-500/30 text-blue-400"}>
                           {b.payment_method === "cash" ? t('admin.cash') : t('admin.card')}
@@ -468,9 +514,11 @@ const AdminPage = () => {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => { setSelectedBooking(b); setCustomerInfoOpen(true); }}><Eye className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteBookingMutation.mutate(b.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex justify-center gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => { setSelectedBooking(b); setCustomerInfoOpen(true); }}><Eye className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteBookingMutation.mutate(b.id)}><Trash2 className="h-4 w-4" /></Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -664,7 +712,7 @@ const AdminPage = () => {
                         <Badge variant={u.role === "admin" ? "default" : "secondary"}>{u.role}</Badge>
                       </TableCell>
                       <TableCell className="font-semibold">{u.booking_count}</TableCell>
-                      <TableCell className="font-display font-semibold text-primary">{u.total_spent} {t('currency')}</TableCell>
+                      <TableCell className="font-display font-semibold text-primary whitespace-nowrap">{u.total_spent}{t('currency')}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" onClick={() => { setSelectedUser(u); setUserEditOpen(true); }}><Pencil className="h-4 w-4" /></Button>
@@ -768,7 +816,7 @@ const AdminPage = () => {
                     <TableHead>{t('admin.message')}</TableHead>
                     <TableHead>{t('admin.date')}</TableHead>
                     <TableHead>{t('admin.status')}</TableHead>
-                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
+                    <TableHead className="text-center">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -800,22 +848,15 @@ const AdminPage = () => {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => window.open(`mailto:${msg.email}?subject=Re: Your message to DriveX&body=Hi ${msg.name},%0D%0A%0D%0A`, '_blank')}
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="text-destructive" 
-                          onClick={() => deleteMessageMutation.mutate(msg.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="flex justify-center gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => window.open(`mailto:${msg.email}?subject=Re: Your message to DriveX&body=Hi ${msg.name},%0D%0A%0D%0A`, '_blank')}>
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-destructive" onClick={() => deleteMessageMutation.mutate(msg.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

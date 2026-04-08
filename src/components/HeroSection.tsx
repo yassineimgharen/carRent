@@ -54,7 +54,7 @@ const HeroSection = () => {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
             {t('hero.badge')}
           </span>
-          <h1 className="font-display text-6xl md:text-6xl font-bold leading-tight">
+          <h1 className="font-display text-4xl md:text-6xl font-bold leading-tight">
             {t('hero.title')} <br />
             <span className="text-gradient">{t('hero.titleHighlight')}</span>
           </h1>

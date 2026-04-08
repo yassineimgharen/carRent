@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Car, LayoutDashboard, Menu, Moon, Sun, User, X, Languages, Calendar } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
@@ -150,6 +151,19 @@ const Navbar = () => {
                 {t('nav.login')}
               </button>
             )}
+            <div className="flex items-center gap-3 px-2 pt-2 border-t border-border/30">
+              <Languages className="h-4 w-4 text-muted-foreground shrink-0" />
+              <Select value={language} onValueChange={(v) => { setLanguage(v as any); setMobileOpen(false); }}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fr">Français</SelectItem>
+                  <SelectItem value="ar">العربية</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         )}
       </nav>
