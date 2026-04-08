@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/use-language";
 import { useState, useEffect } from "react";
+import HeroSearchBar from "@/components/HeroSearchBar";
 
 const heroImages = [
   "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=1920&q=80",
@@ -67,6 +68,7 @@ const HeroSection = () => {
               </Link>
             </Button>
           </div>
+          <HeroSearchBar />
         </motion.div>
       </div>
     </section>

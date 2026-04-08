@@ -56,7 +56,7 @@ const CarCard = ({ car, index = 0, animate = false }: { car: Car; index?: number
               <h3 className="font-display text-lg font-semibold">{car.name}</h3>
             </div>
             <div className="text-right">
-              <p className="font-display text-xl font-bold text-primary">${car.price_per_day}</p>
+              <p className="font-display text-xl font-bold text-primary">{car.price_per_day} {t('currency')}</p>
               <p className="text-xs text-muted-foreground">{t('cars.perDay')}</p>
             </div>
           </div>

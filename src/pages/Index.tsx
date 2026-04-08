@@ -10,6 +10,7 @@ import CarCard from "@/components/CarCard";
 import LocationMap from "@/components/LocationMap";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import StatsBar from "@/components/StatsBar";
 import { fetchCars } from "@/lib/supabase-helpers";
 
 const Index = () => {
@@ -22,6 +23,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Navbar />
       <HeroSection />
+      <StatsBar />
 
       {/* Featured cars */}
       <section className="container py-24 space-y-10">

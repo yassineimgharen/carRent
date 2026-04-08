@@ -75,3 +75,61 @@ fsWrite : Created /goinfre/yaimghar/wheelie-happy-car/src/components/Footer.tsx 
 fsReplace : Added footer translations to use-language.tsx for all 3 languages including footer.description, footer.usefulLinks, footer.aboutUs, footer.terms, footer.privacy, footer.quickLinks, footer.contact
 
 fsReplace : Updated Index.tsx to import and use Footer component instead of simple copyright footer
+
+
+
+
+
+
+
+
+
+
+Project: Wheelie Happy Car — Moroccan car rental web app
+Location: /goinfre/yaimghar/wheelie-happy-car (42 school machine)
+Backend: Node.js/Express on port 4000, SQLite at server/wheelie.db
+Frontend: React + Vite on port 8082, TypeScript, Tailwind, shadcn/ui
+
+Admin credentials: admin / admin1234
+Business phone: +212661604965
+Business email:
+Business address: شارع احمد زكرياء رقم 132 بلوك ابطيح تمديد الداخلة, Agadir, Morocco
+
+What's been built:
+
+Full i18n system: French (default), Arabic (RTL), English — in /src/hooks/use-language.tsx using t() function and LanguageProvider wrapping the app in App.tsx
+
+WhatsApp buttons on car cards and booking form linking to +212661604965
+
+is_featured column on cars table — admin controls which cars appear on homepage
+
+Auto-fill booking form for logged-in users
+
+Hero section with French text
+
+Multi-section Footer component (/src/components/Footer.tsx)
+
+About, Terms, Privacy pages
+
+Current problem (not yet fixed):
+AdminPage.tsx (/src/pages/AdminPage.tsx) is broken. The file is in a bad state because of failed partial edits. Here is what needs to be done:
+
+Rewrite AdminPage.tsx completely with these requirements:
+
+All hooks (useAuth, useLanguage, useQueryClient, all useState, all useQuery, all useMutation) must be called before any early returns (if (loading) return null and if (!user || user.role !== "admin") return <Navigate />)
+
+Import useLanguage from @/hooks/use-language and use t() for every hardcoded string
+
+All translation keys already exist in use-language.tsx under the admin.* namespace (e.g. admin.title, admin.analytics, admin.carsTab, admin.bookingsTab, admin.usersTab, admin.messagesTab, admin.dailyRevenue, admin.today, admin.yesterday, admin.monthlyRevenue, admin.thisMonth, admin.lastMonth, admin.yearlyRevenue, admin.thisYear, admin.lastYear, admin.totalRevenue, admin.allTime, admin.totalBookings, admin.totalUsers, admin.totalCars, admin.addCar, admin.addNewCar, admin.editCar, admin.saveCar, admin.saving, admin.saveChanges, admin.car, admin.category, admin.status, admin.available, admin.unavailable, admin.featuredHomepage, admin.imageUrl, admin.uploadImages, admin.description, admin.seats, admin.transmission, admin.automatic, admin.manual, admin.fuelType, admin.gasoline, admin.diesel, admin.electric, admin.hybrid, admin.noCars, admin.customer, admin.dates, admin.total, admin.payment, admin.cash, admin.card, admin.pending, admin.confirmed, admin.completed, admin.noBookings, admin.noBookingsSearch, admin.searchBookings, admin.refresh, admin.customerInfo, admin.bookingDetails, admin.bookingId, admin.totalPrice, admin.contactInfo, admin.emailLabel, admin.phone, admin.registeredUser, admin.accountName, admin.accountEmail, admin.accountPhone, admin.city, admin.bookedOn, admin.user, admin.contact, admin.role, admin.roleUser, admin.roleAdmin, admin.bookingsCount, admin.totalSpent, admin.joined, admin.noUsers, admin.noUsersSearch, admin.searchUsers, admin.editUser, admin.statistics, admin.totalBookingsReadOnly, admin.totalSpentLabel, admin.from, admin.message, admin.date, admin.unread, admin.read, admin.replied, admin.noMessages) plus profile.firstName, profile.lastName, profile.email, profile.phone, profile.city for the user edit form
+
+Keep all existing functionality: car CRUD with image upload, bookings management with status update, users management, contact messages, analytics with period selectors, customer info dialog with WhatsApp/call/email buttons, user edit dialog
+
+Other key files:
+
+src/lib/supabase-helpers.ts — fetchCars, fetchBookings, fetchAllUsers, fetchAnalytics, upsertCar, deleteCar, deleteBooking, updateBookingStatus, CAR_CATEGORIES
+
+src/lib/api.ts — api() helper for backend calls
+
+src/hooks/use-auth.tsx — useAuth() returns { user, loading }
+
+Backend image upload: POST http://localhost:4000/api/cars/upload

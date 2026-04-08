@@ -14,18 +14,20 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
+import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
 import { fetchCars, fetchBookings, fetchAllUsers, fetchAnalytics, upsertCar, deleteCar, deleteBooking, updateBookingStatus, CAR_CATEGORIES, type Car } from "@/lib/supabase-helpers";
 import { api } from "@/lib/api";
 
 const emptyForm = {
-  name: "", brand: "", category: "Sedan", price_per_day: 0,
+  name: "", brand: "", category: "Renault", price_per_day: 0,
   image_url: "", description: "", seats: 5, transmission: "Automatic",
   fuel_type: "Gasoline", is_available: 1, is_featured: 0,
 };
 
 const AdminPage = () => {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const qc = useQueryClient();
 
   if (loading) return null;
@@ -184,95 +186,95 @@ const AdminPage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container pt-24 pb-16 space-y-6">
-        <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
+        <h1 className="font-display text-3xl font-bold">{t('admin.title')}</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="bg-secondary">
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="cars">Cars ({cars?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="bookings">Bookings ({bookings?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="users">Users ({users?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="messages">Messages ({messages?.filter((m: any) => m.status === 'unread').length ?? 0})</TabsTrigger>
+            <TabsTrigger value="analytics">{t('admin.analytics')}</TabsTrigger>
+            <TabsTrigger value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</TabsTrigger>
+            <TabsTrigger value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</TabsTrigger>
+            <TabsTrigger value="users">{t('admin.usersTab')} ({users?.length ?? 0})</TabsTrigger>
+            <TabsTrigger value="messages">{t('admin.messagesTab')} ({messages?.filter((m: any) => m.status === 'unread').length ?? 0})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Daily Revenue</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.dailyRevenue')}</p>
                   <DollarSign className="h-5 w-5 text-green-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">
-                  ${dailyPeriod === "yesterday" ? (analytics?.yesterday ?? 0) : (analytics?.daily ?? 0)}
+                  {dailyPeriod === "yesterday" ? (analytics?.yesterday ?? 0) : (analytics?.daily ?? 0)} {t('currency')}
                 </p>
                 <Select value={dailyPeriod} onValueChange={setDailyPeriod}>
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="today">Today</SelectItem>
-                    <SelectItem value="yesterday">Yesterday</SelectItem>
+                    <SelectItem value="today">{t('admin.today')}</SelectItem>
+                    <SelectItem value="yesterday">{t('admin.yesterday')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Monthly Revenue</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.monthlyRevenue')}</p>
                   <Calendar className="h-5 w-5 text-blue-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">
-                  ${monthlyPeriod === "lastMonth" ? (analytics?.lastMonth ?? 0) : (analytics?.monthly ?? 0)}
+                  {monthlyPeriod === "lastMonth" ? (analytics?.lastMonth ?? 0) : (analytics?.monthly ?? 0)} {t('currency')}
                 </p>
                 <Select value={monthlyPeriod} onValueChange={setMonthlyPeriod}>
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="thisMonth">This Month</SelectItem>
-                    <SelectItem value="lastMonth">Last Month</SelectItem>
+                    <SelectItem value="thisMonth">{t('admin.thisMonth')}</SelectItem>
+                    <SelectItem value="lastMonth">{t('admin.lastMonth')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Yearly Revenue</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.yearlyRevenue')}</p>
                   <TrendingUp className="h-5 w-5 text-purple-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">
-                  ${yearlyPeriod === "lastYear" ? (analytics?.lastYear ?? 0) : (analytics?.yearly ?? 0)}
+                  {yearlyPeriod === "lastYear" ? (analytics?.lastYear ?? 0) : (analytics?.yearly ?? 0)} {t('currency')}
                 </p>
                 <Select value={yearlyPeriod} onValueChange={setYearlyPeriod}>
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="thisYear">This Year</SelectItem>
-                    <SelectItem value="lastYear">Last Year</SelectItem>
+                    <SelectItem value="thisYear">{t('admin.thisYear')}</SelectItem>
+                    <SelectItem value="lastYear">{t('admin.lastYear')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Total Revenue</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.totalRevenue')}</p>
                   <DollarSign className="h-5 w-5 text-primary" />
                 </div>
-                <p className="font-display text-3xl font-bold">${analytics?.total ?? 0}</p>
-                <p className="text-xs text-muted-foreground">All Time</p>
+                <p className="font-display text-3xl font-bold">{analytics?.total ?? 0} {t('currency')}</p>
+                <p className="text-xs text-muted-foreground">{t('admin.allTime')}</p>
               </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4">
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Total Bookings</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.totalBookings')}</p>
                   <Calendar className="h-5 w-5 text-amber-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">{analytics?.bookings ?? 0}</p>
               </div>
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.totalUsers')}</p>
                   <UsersIcon className="h-5 w-5 text-cyan-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">{analytics?.users ?? 0}</p>
               </div>
               <div className="glass-card p-6 space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Total Cars</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.totalCars')}</p>
                   <CarIcon className="h-5 w-5 text-pink-500" />
                 </div>
                 <p className="font-display text-3xl font-bold">{analytics?.cars ?? 0}</p>
@@ -284,31 +286,31 @@ const AdminPage = () => {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={openNew} className="rounded-full font-display">
-                  <Plus className="mr-2 h-4 w-4" /> Add Car
+                  <Plus className="mr-2 h-4 w-4" /> {t('admin.addCar')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="font-display">{formData.id ? "Edit Car" : "Add New Car"}</DialogTitle>
+                  <DialogTitle className="font-display">{formData.id ? t('admin.editCar') : t('admin.addNewCar')}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={(e) => { e.preventDefault(); carMutation.mutate({ ...formData, image_url: uploadedImages[0]?.url || formData.image_url }); }} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2"><Label>Name *</Label><Input value={formData.name} onChange={(e) => set("name", e.target.value)} required /></div>
-                    <div className="space-y-2"><Label>Brand *</Label><Input value={formData.brand} onChange={(e) => set("brand", e.target.value)} required /></div>
+                    <div className="space-y-2"><Label>{t('admin.name')} *</Label><Input value={formData.name} onChange={(e) => set("name", e.target.value)} required /></div>
+                    <div className="space-y-2"><Label>{t('admin.brand')} *</Label><Input value={formData.brand} onChange={(e) => set("brand", e.target.value)} required /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Category</Label>
+                      <Label>{t('admin.category')}</Label>
                       <Select value={formData.category} onValueChange={(v) => set("category", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>{CAR_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2"><Label>Price/Day *</Label><Input type="number" value={formData.price_per_day} onChange={(e) => set("price_per_day", +e.target.value)} required /></div>
+                    <div className="space-y-2"><Label>{t('admin.price')}/Day *</Label><Input type="number" value={formData.price_per_day} onChange={(e) => set("price_per_day", +e.target.value)} required /></div>
                   </div>
-                  <div className="space-y-2"><Label>Image URL</Label><Input value={formData.image_url || ""} onChange={(e) => set("image_url", e.target.value)} placeholder="https://..." /></div>
+                  <div className="space-y-2"><Label>{t('admin.imageUrl')}</Label><Input value={formData.image_url || ""} onChange={(e) => set("image_url", e.target.value)} placeholder="https://..." /></div>
                   <div className="space-y-2">
-                    <Label>Upload Images</Label>
+                    <Label>{t('admin.uploadImages')}</Label>
                     <Input type="file" accept="image/*" multiple onChange={handleImageUpload} />
                     {uploadedImages.length > 0 && (
                       <div className="grid grid-cols-3 gap-2 mt-2">
@@ -327,34 +329,34 @@ const AdminPage = () => {
                       </div>
                     )}
                   </div>
-                  <div className="space-y-2"><Label>Description</Label><Textarea value={formData.description || ""} onChange={(e) => set("description", e.target.value)} /></div>
+                  <div className="space-y-2"><Label>{t('admin.description')}</Label><Textarea value={formData.description || ""} onChange={(e) => set("description", e.target.value)} /></div>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2"><Label>Seats</Label><Input type="number" value={formData.seats} onChange={(e) => set("seats", +e.target.value)} /></div>
+                    <div className="space-y-2"><Label>{t('admin.seats')}</Label><Input type="number" value={formData.seats} onChange={(e) => set("seats", +e.target.value)} /></div>
                     <div className="space-y-2">
-                      <Label>Transmission</Label>
+                      <Label>{t('admin.transmission')}</Label>
                       <Select value={formData.transmission} onValueChange={(v) => set("transmission", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="Automatic">Automatic</SelectItem><SelectItem value="Manual">Manual</SelectItem></SelectContent>
+                        <SelectContent><SelectItem value="Automatic">{t('admin.automatic')}</SelectItem><SelectItem value="Manual">{t('admin.manual')}</SelectItem></SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Fuel Type</Label>
+                      <Label>{t('admin.fuelType')}</Label>
                       <Select value={formData.fuel_type} onValueChange={(v) => set("fuel_type", v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="Gasoline">Gasoline</SelectItem><SelectItem value="Diesel">Diesel</SelectItem><SelectItem value="Electric">Electric</SelectItem><SelectItem value="Hybrid">Hybrid</SelectItem></SelectContent>
+                        <SelectContent><SelectItem value="Gasoline">{t('admin.gasoline')}</SelectItem><SelectItem value="Diesel">{t('admin.diesel')}</SelectItem><SelectItem value="Electric">{t('admin.electric')}</SelectItem><SelectItem value="Hybrid">{t('admin.hybrid')}</SelectItem></SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={!!formData.is_available} onCheckedChange={(v) => set("is_available", v ? 1 : 0)} />
-                    <Label>Available</Label>
+                    <Label>{t('admin.available')}</Label>
                   </div>
                   <div className="flex items-center gap-3">
                     <Switch checked={!!formData.is_featured} onCheckedChange={(v) => set("is_featured", v ? 1 : 0)} />
-                    <Label>Featured on Homepage</Label>
+                    <Label>{t('admin.featuredHomepage')}</Label>
                   </div>
                   <Button type="submit" className="w-full rounded-full font-display" disabled={carMutation.isPending}>
-                    {carMutation.isPending ? "Saving..." : "Save Car"}
+                    {carMutation.isPending ? t('admin.saving') : t('admin.saveCar')}
                   </Button>
                 </form>
               </DialogContent>
@@ -364,11 +366,11 @@ const AdminPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50">
-                    <TableHead>Car</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('admin.car')}</TableHead>
+                    <TableHead>{t('admin.category')}</TableHead>
+                    <TableHead>{t('admin.price')}</TableHead>
+                    <TableHead>{t('admin.status')}</TableHead>
+                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -386,10 +388,10 @@ const AdminPage = () => {
                         </div>
                       </TableCell>
                       <TableCell><Badge variant="secondary">{car.category}</Badge></TableCell>
-                      <TableCell className="font-display font-semibold">${car.price_per_day}</TableCell>
+                      <TableCell className="font-display font-semibold">{car.price_per_day} {t('currency')}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={car.is_available ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}>
-                          {car.is_available ? "Available" : "Unavailable"}
+                          {car.is_available ? t('admin.available') : t('admin.unavailable')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -399,7 +401,7 @@ const AdminPage = () => {
                     </TableRow>
                   ))}
                   {(!cars || cars.length === 0) && (
-                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No cars yet</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">{t('admin.noCars')}</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -409,7 +411,7 @@ const AdminPage = () => {
           <TabsContent value="bookings" className="space-y-4">
             <div className="flex items-center justify-between">
               <Input
-                placeholder="Search bookings by customer, car, or booking ID..."
+                placeholder={t('admin.searchBookings')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
@@ -422,20 +424,20 @@ const AdminPage = () => {
                   qc.invalidateQueries({ queryKey: ["analytics"] });
                 }}
               >
-                Refresh
+                {t('admin.refresh')}
               </Button>
             </div>
             <div className="glass-card overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50">
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Car</TableHead>
-                    <TableHead>Dates</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Payment</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('admin.customer')}</TableHead>
+                    <TableHead>{t('admin.car')}</TableHead>
+                    <TableHead>{t('admin.dates')}</TableHead>
+                    <TableHead>{t('admin.total')}</TableHead>
+                    <TableHead>{t('admin.payment')}</TableHead>
+                    <TableHead>{t('admin.status')}</TableHead>
+                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -447,10 +449,10 @@ const AdminPage = () => {
                       </TableCell>
                       <TableCell>{b.car_brand} {b.car_name}</TableCell>
                       <TableCell className="text-sm">{b.start_date} → {b.end_date}</TableCell>
-                      <TableCell className="font-display font-semibold">${b.total_price}</TableCell>
+                      <TableCell className="font-display font-semibold">{b.total_price} {t('currency')}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={b.payment_method === "cash" ? "border-amber-500/30 text-amber-400" : "border-blue-500/30 text-blue-400"}>
-                          {b.payment_method === "cash" ? "Cash" : "Card"}
+                          {b.payment_method === "cash" ? t('admin.cash') : t('admin.card')}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -460,9 +462,9 @@ const AdminPage = () => {
                         >
                           <SelectTrigger className="w-28 h-8 text-xs"><SelectValue placeholder="Pending" /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="confirmed">Confirmed</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="pending">{t('admin.pending')}</SelectItem>
+                            <SelectItem value="confirmed">{t('admin.confirmed')}</SelectItem>
+                            <SelectItem value="completed">{t('admin.completed')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -473,7 +475,7 @@ const AdminPage = () => {
                     </TableRow>
                   ))}
                   {filteredBookings.length === 0 && (
-                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">{searchQuery ? "No bookings match your search" : "No bookings yet"}</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">{searchQuery ? t('admin.noBookingsSearch') : t('admin.noBookings')}</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -482,27 +484,27 @@ const AdminPage = () => {
             <Dialog open={customerInfoOpen} onOpenChange={setCustomerInfoOpen}>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="font-display">Customer Information</DialogTitle>
+                  <DialogTitle className="font-display">{t('admin.customerInfo')}</DialogTitle>
                 </DialogHeader>
                 {selectedBooking && (
                   <div className="space-y-4">
                     <div className="glass-card p-4 space-y-3">
-                      <h3 className="font-semibold text-sm text-muted-foreground uppercase">Booking Details</h3>
+                      <h3 className="font-semibold text-sm text-muted-foreground uppercase">{t('admin.bookingDetails')}</h3>
                       <div className="space-y-2">
-                        <div><span className="text-sm text-muted-foreground">Booking ID:</span> <span className="font-medium">#{selectedBooking.id}</span></div>
-                        <div><span className="text-sm text-muted-foreground">Car:</span> <span className="font-medium">{selectedBooking.car_brand} {selectedBooking.car_name}</span></div>
-                        <div><span className="text-sm text-muted-foreground">Dates:</span> <span className="font-medium">{selectedBooking.start_date} → {selectedBooking.end_date}</span></div>
-                        <div><span className="text-sm text-muted-foreground">Total Price:</span> <span className="font-display font-semibold text-primary">${selectedBooking.total_price}</span></div>
-                        <div><span className="text-sm text-muted-foreground">Payment:</span> <Badge variant="outline" className="ml-2">{selectedBooking.payment_method}</Badge></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.bookingId')}:</span> <span className="font-medium">#{selectedBooking.id}</span></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.car')}:</span> <span className="font-medium">{selectedBooking.car_brand} {selectedBooking.car_name}</span></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.dates')}:</span> <span className="font-medium">{selectedBooking.start_date} → {selectedBooking.end_date}</span></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.totalPrice')}:</span> <span className="font-display font-semibold text-primary">{selectedBooking.total_price} {t('currency')}</span></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.payment')}:</span> <Badge variant="outline" className="ml-2">{selectedBooking.payment_method}</Badge></div>
                       </div>
                     </div>
 
                     <div className="glass-card p-4 space-y-3">
-                      <h3 className="font-semibold text-sm text-muted-foreground uppercase">Contact Information</h3>
+                      <h3 className="font-semibold text-sm text-muted-foreground uppercase">{t('admin.contactInfo')}</h3>
                       <div className="space-y-2">
-                        <div><span className="text-sm text-muted-foreground">Name:</span> <span className="font-medium">{selectedBooking.customer_name}</span></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.name')}:</span> <span className="font-medium">{selectedBooking.customer_name}</span></div>
                         <div className="flex items-center justify-between">
-                          <div><span className="text-sm text-muted-foreground">Email:</span> <span className="font-medium">{selectedBooking.customer_email}</span></div>
+                          <div><span className="text-sm text-muted-foreground">{t('admin.emailLabel')}:</span> <span className="font-medium">{selectedBooking.customer_email}</span></div>
                           <button
                             onClick={() => {
                               const subject = `Booking #${selectedBooking.id} - ${selectedBooking.car_brand} ${selectedBooking.car_name}`;
@@ -520,7 +522,7 @@ const AdminPage = () => {
                         </div>
                         {selectedBooking.customer_phone && (
                           <div className="flex items-center justify-between">
-                            <div><span className="text-sm text-muted-foreground">Phone:</span> <span className="font-medium">{selectedBooking.customer_phone}</span></div>
+                            <div><span className="text-sm text-muted-foreground">{t('admin.phone')}:</span> <span className="font-medium">{selectedBooking.customer_phone}</span></div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => {
@@ -553,7 +555,7 @@ const AdminPage = () => {
                         )}
                         {selectedBooking.user_phone && !selectedBooking.customer_phone && (
                           <div className="flex items-center justify-between">
-                            <div><span className="text-sm text-muted-foreground">Phone:</span> <span className="font-medium">{selectedBooking.user_phone}</span></div>
+                            <div><span className="text-sm text-muted-foreground">{t('admin.phone')}:</span> <span className="font-medium">{selectedBooking.user_phone}</span></div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => {
@@ -589,22 +591,22 @@ const AdminPage = () => {
 
                     {selectedBooking.user_id && (
                       <div className="glass-card p-4 space-y-3 border-primary/20">
-                        <h3 className="font-semibold text-sm text-primary uppercase">Registered User Account</h3>
+                        <h3 className="font-semibold text-sm text-primary uppercase">{t('admin.registeredUser')}</h3>
                         <div className="space-y-2">
-                          <div><span className="text-sm text-muted-foreground">Account Name:</span> <span className="font-medium">{selectedBooking.user_first_name} {selectedBooking.user_last_name}</span></div>
-                          <div><span className="text-sm text-muted-foreground">Account Email:</span> <span className="font-medium">{selectedBooking.user_email}</span></div>
+                          <div><span className="text-sm text-muted-foreground">{t('admin.accountName')}:</span> <span className="font-medium">{selectedBooking.user_first_name} {selectedBooking.user_last_name}</span></div>
+                          <div><span className="text-sm text-muted-foreground">{t('admin.accountEmail')}:</span> <span className="font-medium">{selectedBooking.user_email}</span></div>
                           {selectedBooking.user_phone && (
-                            <div><span className="text-sm text-muted-foreground">Account Phone:</span> <span className="font-medium">{selectedBooking.user_phone}</span></div>
+                            <div><span className="text-sm text-muted-foreground">{t('admin.accountPhone')}:</span> <span className="font-medium">{selectedBooking.user_phone}</span></div>
                           )}
                           {selectedBooking.user_city && (
-                            <div><span className="text-sm text-muted-foreground">City:</span> <span className="font-medium">{selectedBooking.user_city}</span></div>
+                            <div><span className="text-sm text-muted-foreground">{t('admin.city')}:</span> <span className="font-medium">{selectedBooking.user_city}</span></div>
                           )}
                         </div>
                       </div>
                     )}
 
                     <div className="text-xs text-muted-foreground text-center pt-2">
-                      Booked on {new Date(selectedBooking.created_at).toLocaleString()}
+                      {t('admin.bookedOn')} {new Date(selectedBooking.created_at).toLocaleString()}
                     </div>
                   </div>
                 )}
@@ -615,7 +617,7 @@ const AdminPage = () => {
           <TabsContent value="users" className="space-y-4">
             <div className="flex items-center justify-between">
               <Input
-                placeholder="Search users by name, email, or city..."
+                placeholder={t('admin.searchUsers')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
@@ -625,21 +627,21 @@ const AdminPage = () => {
                 size="sm"
                 onClick={() => qc.invalidateQueries({ queryKey: ["users"] })}
               >
-                Refresh
+                {t('admin.refresh')}
               </Button>
             </div>
             <div className="glass-card overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50">
-                    <TableHead>User</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Bookings</TableHead>
-                    <TableHead>Total Spent</TableHead>
-                    <TableHead>Joined</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('admin.user')}</TableHead>
+                    <TableHead>{t('admin.contact')}</TableHead>
+                    <TableHead>{t('admin.city')}</TableHead>
+                    <TableHead>{t('admin.role')}</TableHead>
+                    <TableHead>{t('admin.bookingsCount')}</TableHead>
+                    <TableHead>{t('admin.totalSpent')}</TableHead>
+                    <TableHead>{t('admin.joined')}</TableHead>
+                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -662,7 +664,7 @@ const AdminPage = () => {
                         <Badge variant={u.role === "admin" ? "default" : "secondary"}>{u.role}</Badge>
                       </TableCell>
                       <TableCell className="font-semibold">{u.booking_count}</TableCell>
-                      <TableCell className="font-display font-semibold text-primary">${u.total_spent}</TableCell>
+                      <TableCell className="font-display font-semibold text-primary">{u.total_spent} {t('currency')}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" onClick={() => { setSelectedUser(u); setUserEditOpen(true); }}><Pencil className="h-4 w-4" /></Button>
@@ -670,7 +672,7 @@ const AdminPage = () => {
                     </TableRow>
                   ))}
                   {filteredUsers.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{searchQuery ? "No users match your search" : "No users yet"}</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{searchQuery ? t('admin.noUsersSearch') : t('admin.noUsers')}</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -679,7 +681,7 @@ const AdminPage = () => {
             <Dialog open={userEditOpen} onOpenChange={setUserEditOpen}>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="font-display">Edit User</DialogTitle>
+                  <DialogTitle className="font-display">{t('admin.editUser')}</DialogTitle>
                 </DialogHeader>
                 {selectedUser && (
                   <form onSubmit={(e) => {
@@ -699,45 +701,45 @@ const AdminPage = () => {
                   }} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>First Name</Label>
+                        <Label>{t('profile.firstName')}</Label>
                         <Input value={selectedUser.first_name || ""} onChange={(e) => setSelectedUser({...selectedUser, first_name: e.target.value})} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Last Name</Label>
+                        <Label>{t('profile.lastName')}</Label>
                         <Input value={selectedUser.last_name || ""} onChange={(e) => setSelectedUser({...selectedUser, last_name: e.target.value})} />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label>Email</Label>
+                      <Label>{t('profile.email')}</Label>
                       <Input type="email" value={selectedUser.email} onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})} required />
                     </div>
                     <div className="space-y-2">
-                      <Label>Phone</Label>
+                      <Label>{t('profile.phone')}</Label>
                       <Input value={selectedUser.phone || ""} onChange={(e) => setSelectedUser({...selectedUser, phone: e.target.value})} placeholder="+212 XXX XXX XXX" />
                     </div>
                     <div className="space-y-2">
-                      <Label>City</Label>
+                      <Label>{t('profile.city')}</Label>
                       <Input value={selectedUser.city || ""} onChange={(e) => setSelectedUser({...selectedUser, city: e.target.value})} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Role</Label>
+                      <Label>{t('admin.role')}</Label>
                       <Select value={selectedUser.role} onValueChange={(v) => setSelectedUser({...selectedUser, role: v})}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="user">User</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="user">{t('admin.roleUser')}</SelectItem>
+                          <SelectItem value="admin">{t('admin.roleAdmin')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="glass-card p-3 space-y-2">
-                      <p className="text-xs text-muted-foreground uppercase font-semibold">Statistics</p>
+                      <p className="text-xs text-muted-foreground uppercase font-semibold">{t('admin.statistics')}</p>
                       <div className="space-y-2">
                         <div className="space-y-1">
-                          <Label className="text-xs">Total Bookings (Read-only)</Label>
+                          <Label className="text-xs">{t('admin.totalBookingsReadOnly')}</Label>
                           <Input value={selectedUser.booking_count} disabled className="bg-secondary" />
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-xs">Total Spent ($)</Label>
+                          <Label className="text-xs">{t('admin.totalSpentLabel')}</Label>
                           <Input 
                             type="number" 
                             step="0.01"
@@ -749,7 +751,7 @@ const AdminPage = () => {
                       </div>
                     </div>
                     <Button type="submit" className="w-full rounded-full font-display" disabled={updateUserMutation.isPending}>
-                      {updateUserMutation.isPending ? "Saving..." : "Save Changes"}
+                      {updateUserMutation.isPending ? t('admin.saving') : t('admin.saveChanges')}
                     </Button>
                   </form>
                 )}
@@ -762,11 +764,11 @@ const AdminPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border/50">
-                    <TableHead>From</TableHead>
-                    <TableHead>Message</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t('admin.from')}</TableHead>
+                    <TableHead>{t('admin.message')}</TableHead>
+                    <TableHead>{t('admin.date')}</TableHead>
+                    <TableHead>{t('admin.status')}</TableHead>
+                    <TableHead className="text-right">{t('admin.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -792,9 +794,9 @@ const AdminPage = () => {
                         >
                           <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="unread">Unread</SelectItem>
-                            <SelectItem value="read">Read</SelectItem>
-                            <SelectItem value="replied">Replied</SelectItem>
+                            <SelectItem value="unread">{t('admin.unread')}</SelectItem>
+                            <SelectItem value="read">{t('admin.read')}</SelectItem>
+                            <SelectItem value="replied">{t('admin.replied')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
@@ -818,7 +820,7 @@ const AdminPage = () => {
                     </TableRow>
                   ))}
                   {(!messages || messages.length === 0) && (
-                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No messages yet</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">{t('admin.noMessages')}</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>

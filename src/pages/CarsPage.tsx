@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import CarCard from "@/components/CarCard";
 import CarFilters from "@/components/CarFilters";
@@ -10,9 +11,15 @@ import { useLanguage } from "@/hooks/use-language";
 
 const CarsPage = () => {
   const { data: cars, isLoading } = useQuery({ queryKey: ["cars"], queryFn: fetchCars });
+  const [searchParams] = useSearchParams();
   const { t } = useLanguage();
-  const [category, setCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState(searchParams.get("category") || "All");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+
+  useEffect(() => {
+    setCategory(searchParams.get("category") || "All");
+    setSearchQuery(searchParams.get("q") || "");
+  }, [searchParams]);
 
   const filtered = (cars ?? []).filter((c) => {
     if (category !== "All" && c.category !== category) return false;

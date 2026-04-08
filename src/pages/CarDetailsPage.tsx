@@ -80,7 +80,7 @@ const CarDetailsPage = () => {
                 <span className="flex items-center gap-2"><Fuel className="h-4 w-4" /> {car.fuel_type}</span>
               </div>
 
-              <p className="font-display text-3xl font-bold text-primary">${car.price_per_day}<span className="text-sm font-normal text-muted-foreground">{t('cars.perDay')}</span></p>
+              <p className="font-display text-3xl font-bold text-primary">{car.price_per_day} <span className="text-sm font-normal text-muted-foreground">{t('currency')}{t('cars.perDay')}</span></p>
 
               {car.description && <p className="text-muted-foreground leading-relaxed">{car.description}</p>}
             </div>

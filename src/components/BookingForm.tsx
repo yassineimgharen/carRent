@@ -154,8 +154,8 @@ const BookingForm = ({ car }: { car: Car }) => {
 
       {days > 0 && (
         <div className="flex justify-between items-center p-4 rounded-lg bg-primary/5 border border-primary/10">
-          <span className="text-sm text-muted-foreground">{days} {t('booking.days')} × ${car.price_per_day}</span>
-          <span className="font-display text-xl font-bold text-primary">${total}</span>
+          <span className="text-sm text-muted-foreground">{days} {t('booking.days')} × {car.price_per_day} {t('currency')}</span>
+          <span className="font-display text-xl font-bold text-primary">{total} {t('currency')}</span>
         </div>
       )}
 
