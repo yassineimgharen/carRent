@@ -1,6 +1,50 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { Users, Car, Award, MapPin } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
+import { useEffect, useRef } from "react";
+
+const Counter = ({ value, duration = 2 }: { value: string; duration?: number }) => {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest));
+  const nodeRef = useRef<HTMLParagraphElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated.current) {
+            hasAnimated.current = true;
+            const numericValue = parseInt(value.replace(/\D/g, ''));
+            if (!isNaN(numericValue)) {
+              const controls = animate(count, numericValue, { duration });
+              return () => controls.stop();
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [count, value, duration]);
+
+  // If value contains non-numeric characters, show as is
+  if (!/\d/.test(value)) {
+    return <p className="font-display text-2xl font-bold">{value}</p>;
+  }
+
+  return (
+    <p ref={nodeRef} className="font-display text-2xl font-bold">
+      <motion.span>{rounded}</motion.span>
+      {value.includes('+') && '+'}
+    </p>
+  );
+};
 
 const StatsBar = () => {
   const { t } = useLanguage();
@@ -34,7 +78,7 @@ const StatsBar = () => {
               <Icon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="font-display text-2xl md:text-2xl font-bold">{value}</p>
+              <Counter value={value} duration={2} />
               <p className="text-xs md:text-sm text-muted-foreground whitespace-nowrap">{label}</p>
             </div>
           </motion.div>

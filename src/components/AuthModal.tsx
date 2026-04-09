@@ -42,9 +42,11 @@ const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
     e.preventDefault();
     setError(""); setSuccess("");
     const fd = new FormData(e.currentTarget);
+    const password = fd.get("password") as string;
+    const confirmPassword = fd.get("confirm_password") as string;
     const data = {
       email: fd.get("email") as string,
-      password: fd.get("password") as string,
+      password: password,
       first_name: fd.get("first_name") as string,
       last_name: fd.get("last_name") as string,
       phone: fd.get("phone") as string,
@@ -56,6 +58,7 @@ const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
     if (!data.city.trim()) return setError("City is required.");
     if (!emailRegex.test(data.email)) return setError("Enter a valid email address.");
     if (data.password.length < 8) return setError("Password must be at least 8 characters.");
+    if (password !== confirmPassword) return setError("Passwords do not match.");
     setLoading(true);
     try {
       await register(data);
@@ -145,6 +148,10 @@ const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
               <div className="space-y-1">
                 <Label htmlFor="signup-password">{t('auth.password')}</Label>
                 <Input id="signup-password" name="password" type="password" placeholder={t('auth.passwordMin')} required className="transition-all focus:scale-[1.02]" />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="confirm-password">{t('auth.confirmPassword')}</Label>
+                <Input id="confirm-password" name="confirm_password" type="password" placeholder={t('auth.confirmPassword')} required className="transition-all focus:scale-[1.02]" />
               </div>
               {error && <p className="text-sm text-destructive animate-in fade-in-50 slide-in-from-top-2 duration-200">{error}</p>}
               {success && <p className="text-sm text-success animate-in fade-in-50 slide-in-from-top-2 duration-200">{success}</p>}

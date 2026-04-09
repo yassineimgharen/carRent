@@ -1,5 +1,6 @@
 import { useLanguage } from "@/hooks/use-language";
 import { Car, Shield, Clock, Mail, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -11,56 +12,84 @@ export default function AboutPage() {
       <Navbar />
       <div className="container mx-auto px-4 py-16">
         {/* Introduction */}
-        <div className="max-w-4xl mx-auto mb-16 mt-10">
+        <motion.div 
+          className="max-w-4xl mx-auto mb-16 mt-10"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <p className="text-lg text-gray-700 leading-relaxed">{t("about.intro")}</p>
-        </div>
+        </motion.div>
 
         {/* Mission Section */}
         <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
+          <motion.h2 
+            className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="w-1 h-8 bg-primary rounded"></div>
             {t("about.missionTitle")}
-          </h2>
+          </motion.h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-card p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-              <Clock className="w-10 h-10 text-primary mb-4" />
-              <p className="text-muted-foreground">{t("about.mission1")}</p>
-            </div>
-            <div className="bg-card p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-              <Shield className="w-10 h-10 text-primary mb-4" />
-              <p className="text-muted-foreground">{t("about.mission2")}</p>
-            </div>
-            <div className="bg-card p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-              <Car className="w-10 h-10 text-primary mb-4" />
-              <p className="text-muted-foreground">{t("about.mission3")}</p>
-            </div>
+            {[1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="bg-card p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                {i === 1 && <Clock className="w-10 h-10 text-primary mb-4" />}
+                {i === 2 && <Shield className="w-10 h-10 text-primary mb-4" />}
+                {i === 3 && <Car className="w-10 h-10 text-primary mb-4" />}
+                <p className="text-muted-foreground">{t(`about.mission${i}`)}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
 
         {/* Why Choose Us */}
         <div className="max-w-4xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
+          <motion.h2 
+            className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="w-1 h-8 bg-primary rounded"></div>
             {t("about.whyTitle")}
-          </h2>
+          </motion.h2>
           <div className="space-y-6">
-            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-              <h3 className="font-semibold text-lg text-foreground mb-2">{t("about.why1Title")}</h3>
-              <p className="text-muted-foreground">{t("about.why1Text")}</p>
-            </div>
-            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-              <h3 className="font-semibold text-lg text-foreground mb-2">{t("about.why2Title")}</h3>
-              <p className="text-muted-foreground">{t("about.why2Text")}</p>
-            </div>
-            <div className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary">
-              <h3 className="font-semibold text-lg text-foreground mb-2">{t("about.why3Title")}</h3>
-              <p className="text-muted-foreground">{t("about.why3Text")}</p>
-            </div>
+            {[1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="bg-primary/5 p-6 rounded-xl border-l-4 border-primary"
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+              >
+                <h3 className="font-semibold text-lg text-foreground mb-2">{t(`about.why${i}Title`)}</h3>
+                <p className="text-muted-foreground">{t(`about.why${i}Text`)}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
 
         {/* Quality & Safety */}
-        <div className="max-w-4xl mx-auto mb-16">
+        <motion.div 
+          className="max-w-4xl mx-auto mb-16"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
             <div className="w-1 h-8 bg-primary rounded"></div>
             {t("about.qualityTitle")}
@@ -68,7 +97,7 @@ export default function AboutPage() {
           <div className="bg-primary text-primary-foreground p-8 rounded-xl">
             <p className="text-lg leading-relaxed">{t("about.qualityText")}</p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Contact Section */}
         <div className="max-w-4xl mx-auto mb-16">

@@ -16,7 +16,7 @@ const ProfilePage = () => {
   const { t } = useLanguage();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ first_name: "", last_name: "", phone: "", city: "" });
+  const [form, setForm] = useState({ first_name: "", last_name: "", phone: "", city: "", cin: "", driver_license: "" });
 
   const { mutate: save, isPending: saving } = useMutation({
     mutationFn: () => updateMe(form),
@@ -29,7 +29,14 @@ const ProfilePage = () => {
   if (!user) return <Navigate to="/" replace />;
 
   const startEdit = () => {
-    setForm({ first_name: user.first_name ?? "", last_name: user.last_name ?? "", phone: user.phone ?? "", city: user.city ?? "" });
+    setForm({ 
+      first_name: user.first_name ?? "", 
+      last_name: user.last_name ?? "", 
+      phone: user.phone ?? "", 
+      city: user.city ?? "",
+      cin: user.cin ?? "",
+      driver_license: user.driver_license ?? ""
+    });
     setEditing(true);
   };
 
@@ -64,9 +71,9 @@ const ProfilePage = () => {
 
           {editing ? (
             <div className="grid sm:grid-cols-2 gap-4">
-              {(["first_name", "last_name", "phone", "city"] as const).map((field) => (
+              {(["first_name", "last_name", "phone", "city", "cin", "driver_license"] as const).map((field) => (
                 <div key={field} className="space-y-1">
-                  <Label>{t(`profile.${field.replace('_', '')}` as any)}</Label>
+                  <Label>{field === 'cin' ? t('booking.cin') : field === 'driver_license' ? t('booking.driverLicense') : t(`profile.${field.replace('_', '')}` as any)}</Label>
                   <Input value={form[field]} onChange={(e) => setForm(f => ({ ...f, [field]: e.target.value }))} />
                 </div>
               ))}
@@ -78,6 +85,8 @@ const ProfilePage = () => {
                 { label: t('profile.lastName'), value: user.last_name },
                 { label: t('profile.phone'), value: user.phone },
                 { label: t('profile.city'), value: user.city },
+                { label: t('booking.cin'), value: user.cin },
+                { label: t('booking.driverLicense'), value: user.driver_license },
               ].map(({ label, value }) => (
                 <div key={label}>
                   <p className="text-muted-foreground text-xs">{label}</p>

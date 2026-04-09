@@ -4,16 +4,16 @@ const db = require("../db");
 const { auth, adminOnly } = require("../middleware/auth");
 
 router.get("/me", auth, (req, res) => {
-  const user = db.prepare("SELECT id, email, first_name, last_name, phone, city, role, created_at FROM users WHERE id = ?").get(req.user.id);
+  const user = db.prepare("SELECT id, email, first_name, last_name, phone, city, cin, driver_license, role, created_at FROM users WHERE id = ?").get(req.user.id);
   if (!user) return res.status(404).json({ error: "User not found" });
   res.json(user);
 });
 
 router.put("/me", auth, (req, res) => {
-  const { first_name, last_name, phone, city } = req.body;
-  db.prepare("UPDATE users SET first_name=?, last_name=?, phone=?, city=? WHERE id=?")
-    .run(first_name || null, last_name || null, phone || null, city || null, req.user.id);
-  const user = db.prepare("SELECT id, email, first_name, last_name, phone, city, role, created_at FROM users WHERE id = ?").get(req.user.id);
+  const { first_name, last_name, phone, city, cin, driver_license } = req.body;
+  db.prepare("UPDATE users SET first_name=?, last_name=?, phone=?, city=?, cin=?, driver_license=? WHERE id=?")
+    .run(first_name || null, last_name || null, phone || null, city || null, cin || null, driver_license || null, req.user.id);
+  const user = db.prepare("SELECT id, email, first_name, last_name, phone, city, cin, driver_license, role, created_at FROM users WHERE id = ?").get(req.user.id);
   res.json(user);
 });
 

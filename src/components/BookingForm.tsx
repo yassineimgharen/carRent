@@ -31,6 +31,9 @@ const BookingForm = ({ car }: { car: Car }) => {
       const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
       setName(fullName || user.email);
       setEmail(user.email);
+      if (user.phone) setPhone(user.phone);
+      if (user.cin) setCin(user.cin);
+      if (user.driver_license) setDriverLicense(user.driver_license);
     }
   }, [user]);
 

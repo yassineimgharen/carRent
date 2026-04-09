@@ -42,6 +42,8 @@ export type User = {
   last_name: string | null;
   phone: string | null;
   city: string | null;
+  cin: string | null;
+  driver_license: string | null;
   role: string;
   created_at: string;
 };
