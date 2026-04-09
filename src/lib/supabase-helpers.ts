@@ -23,6 +23,8 @@ export type Booking = {
   customer_name: string;
   customer_email: string;
   customer_phone: string | null;
+  cin: string | null;
+  driver_license: string | null;
   start_date: string;
   end_date: string;
   total_price: number;

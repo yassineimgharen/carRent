@@ -31,8 +31,8 @@ router.get("/car/:carId", (req, res) => {
   res.json(bookings);
 });
 
-router.post("/", (req, res) => {
-  const { car_id, customer_name, customer_email, customer_phone, start_date, end_date, total_price, payment_method } = req.body;
+router.post("/", async (req, res) => {
+  const { car_id, customer_name, customer_email, customer_phone, cin, driver_license, start_date, end_date, total_price, payment_method } = req.body;
   if (!car_id || !customer_name || !customer_email || !start_date || !end_date || !total_price)
     return res.status(400).json({ error: "Missing required fields" });
 
@@ -77,17 +77,40 @@ router.post("/", (req, res) => {
   }
 
   const result = db.prepare(
-    "INSERT INTO bookings (car_id, user_id, customer_name, customer_email, customer_phone, start_date, end_date, total_price, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run(carId, user_id, customer_name, customer_email, customer_phone || null, start_date, end_date, total_price, payment_method || "card", "pending");
+    "INSERT INTO bookings (car_id, user_id, customer_name, customer_email, customer_phone, cin, driver_license, start_date, end_date, total_price, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(carId, user_id, customer_name, customer_email, customer_phone || null, cin || null, driver_license || null, start_date, end_date, total_price, payment_method || "card", "pending");
 
-  res.status(201).json(db.prepare("SELECT * FROM bookings WHERE id = ?").get(result.lastInsertRowid));
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(result.lastInsertRowid);
+
+  // Send emails
+  const { sendBookingConfirmation, sendAdminNotification } = require("../services/emailService");
+  sendBookingConfirmation(booking, car).catch(err => console.error("Email error:", err));
+  sendAdminNotification(booking, car).catch(err => console.error("Admin email error:", err));
+
+  res.status(201).json(booking);
 });
 
-router.patch("/:id/status", auth, adminOnly, (req, res) => {
+router.patch("/:id/status", auth, adminOnly, async (req, res) => {
   const { status } = req.body;
   if (!["pending", "confirmed", "completed", "cancelled"].includes(status))
     return res.status(400).json({ error: "Invalid status" });
+  
+  const booking = db.prepare(`
+    SELECT b.*, c.name as car_name, c.brand as car_brand
+    FROM bookings b
+    LEFT JOIN cars c ON b.car_id = c.id
+    WHERE b.id = ?
+  `).get(req.params.id);
+
+  if (!booking) return res.status(404).json({ error: "Booking not found" });
+
   db.prepare("UPDATE bookings SET status=?, updated_at=datetime('now') WHERE id=?").run(status, req.params.id);
+  
+  // Send status change email
+  const { sendStatusChangeEmail } = require("../services/emailService");
+  const car = { name: booking.car_name, brand: booking.car_brand };
+  sendStatusChangeEmail({ ...booking, status }, car, status).catch(err => console.error("Email error:", err));
+
   res.json({ success: true });
 });
 

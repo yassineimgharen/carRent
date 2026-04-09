@@ -634,6 +634,12 @@ const AdminPage = () => {
                             </div>
                           </div>
                         )}
+                        {selectedBooking.cin && (
+                          <div><span className="text-sm text-muted-foreground">CIN:</span> <span className="font-medium">{selectedBooking.cin}</span></div>
+                        )}
+                        {selectedBooking.driver_license && (
+                          <div><span className="text-sm text-muted-foreground">Driver License:</span> <span className="font-medium">{selectedBooking.driver_license}</span></div>
+                        )}
                       </div>
                     </div>
 

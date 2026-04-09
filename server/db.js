@@ -53,6 +53,8 @@ db.exec(`
     customer_name TEXT NOT NULL,
     customer_email TEXT NOT NULL,
     customer_phone TEXT,
+    cin TEXT,
+    driver_license TEXT,
     start_date TEXT NOT NULL,
     end_date TEXT NOT NULL,
     total_price REAL NOT NULL,

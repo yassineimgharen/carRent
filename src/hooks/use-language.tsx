@@ -71,6 +71,10 @@ const translations: Record<Language, Record<string, string>> = {
     'booking.success': 'Réservation confirmée avec succès!',
     'booking.error': 'Erreur lors de la réservation',
     'booking.loginRequired': 'Veuillez vous connecter pour réserver',
+    'booking.cin': 'CIN',
+    'booking.cinPlaceholder': 'Numéro CIN',
+    'booking.driverLicense': 'Permis de conduire',
+    'booking.driverLicensePlaceholder': 'Numéro de permis',
     
     // Profile
     'profile.title': 'Mon profil',
@@ -423,6 +427,10 @@ const translations: Record<Language, Record<string, string>> = {
     'booking.success': 'تم تأكيد الحجز بنجاح!',
     'booking.error': 'خطأ في الحجز',
     'booking.loginRequired': 'يرجى تسجيل الدخول للحجز',
+    'booking.cin': 'رقم البطاقة الوطنية',
+    'booking.cinPlaceholder': 'رقم البطاقة الوطنية',
+    'booking.driverLicense': 'رخصة السياقة',
+    'booking.driverLicensePlaceholder': 'رقم رخصة السياقة',
     
     // Profile
     'profile.title': 'ملفي الشخصي',
@@ -775,6 +783,10 @@ const translations: Record<Language, Record<string, string>> = {
     'booking.success': 'Booking confirmed successfully!',
     'booking.error': 'Booking error',
     'booking.loginRequired': 'Please login to book',
+    'booking.cin': 'CIN',
+    'booking.cinPlaceholder': 'CIN Number',
+    'booking.driverLicense': 'Driver License',
+    'booking.driverLicensePlaceholder': 'License Number',
     
     // Profile
     'profile.title': 'My Profile',

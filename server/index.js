@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const { startReminderScheduler } = require("./services/reminderScheduler");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -17,5 +18,8 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/contact", require("./routes/contact"));
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
+
+// Start reminder scheduler
+startReminderScheduler();
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

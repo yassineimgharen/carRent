@@ -21,6 +21,8 @@ const BookingForm = ({ car }: { car: Car }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [cin, setCin] = useState("");
+  const [driverLicense, setDriverLicense] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [loading, setLoading] = useState(false);
 
@@ -58,6 +60,8 @@ const BookingForm = ({ car }: { car: Car }) => {
         customer_name: name.trim(),
         customer_email: email.trim(),
         customer_phone: phone.trim() || null,
+        cin: cin.trim() || null,
+        driver_license: driverLicense.trim() || null,
         start_date: format(startDate, "yyyy-MM-dd"),
         end_date: format(endDate, "yyyy-MM-dd"),
         total_price: total,
@@ -67,6 +71,8 @@ const BookingForm = ({ car }: { car: Car }) => {
       setName("");
       setEmail("");
       setPhone("");
+      setCin("");
+      setDriverLicense("");
       setStartDate(undefined);
       setEndDate(undefined);
     } catch (error: any) {
@@ -122,6 +128,15 @@ const BookingForm = ({ car }: { car: Car }) => {
       <div className="space-y-1.5">
         <Label className="text-xs font-medium">Phone</Label>
         <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+212 XXX XXX XXX" className="h-9 text-sm" />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium">{t('booking.cin')}</Label>
+        <Input value={cin} onChange={(e) => setCin(e.target.value)} placeholder={t('booking.cinPlaceholder')} className="h-9 text-sm" />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium">{t('booking.driverLicense')}</Label>
+        <Input value={driverLicense} onChange={(e) => setDriverLicense(e.target.value)} placeholder={t('booking.driverLicensePlaceholder')} className="h-9 text-sm" />
       </div>
 
       <div className="space-y-2">
