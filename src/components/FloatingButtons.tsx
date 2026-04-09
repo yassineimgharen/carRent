@@ -1,5 +1,5 @@
 const FloatingButtons = () => (
-  <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+  <div className="fixed bottom-6 right-6 rtl:right-auto rtl:left-6 z-50 flex flex-col gap-3">
     <a
       href="tel:+212661604965"
       className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-110 transition-transform"

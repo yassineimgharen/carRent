@@ -1,11 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchMyBookings } from "@/lib/supabase-helpers";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchMyBookings, deleteBooking } from "@/lib/supabase-helpers";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Navigate } from "react-router-dom";
-import { Calendar, Car, CreditCard, DollarSign } from "lucide-react";
+import { Calendar, Car, CreditCard, DollarSign, Trash2, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const statusColor: Record<string, string> = {
   confirmed: "bg-success/20 text-success border-success/30",
@@ -17,12 +30,29 @@ const statusColor: Record<string, string> = {
 const MyBookingsPage = () => {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
 
   const { data: bookings } = useQuery({
     queryKey: ["my-bookings"],
     enabled: !!user,
     queryFn: fetchMyBookings,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-bookings"] });
+      queryClient.invalidateQueries({ queryKey: ["myBookings"] });
+      toast.success("Booking cancelled successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to cancel booking");
+    },
+  });
+
+  const handleCancelBooking = (bookingId: number) => {
+    deleteMutation.mutate(bookingId);
+  };
 
   if (loading) return null;
   if (!user) return <Navigate to="/" replace />;
@@ -77,7 +107,7 @@ const MyBookingsPage = () => {
                       <DollarSign className="h-4 w-4" />
                       <p className="text-xs font-medium">Total Price</p>
                     </div>
-                    <p className="font-display font-bold text-primary text-2xl">${b.total_price}</p>
+                    <p className="font-display font-bold text-primary text-2xl">{b.total_price} {t('currency')}</p>
                   </div>
                   
                   <div className="glass-card p-4 space-y-1">
@@ -97,6 +127,58 @@ const MyBookingsPage = () => {
                     <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleTimeString()}</p>
                   </div>
                 </div>
+
+                {/* Cancel/Contact Admin Section */}
+                {b.status === 'pending' && (
+                  <div className="pt-2 border-t border-border/50">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="w-full sm:w-auto">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Cancel Booking
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to cancel this booking for {b.car_brand} {b.car_name}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleCancelBooking(b.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Yes, Cancel Booking
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+
+                {b.status === 'confirmed' && (
+                  <div className="pt-2 border-t border-border/50">
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-warning/10 border border-warning/30">
+                      <AlertCircle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-warning">Booking Confirmed</p>
+                        <p className="text-xs text-muted-foreground">
+                          This booking has been confirmed by the admin. To cancel, please contact us at{' '}
+                          <a href="mailto:sihabi.cars@gmail.com" className="text-primary hover:underline">
+                            sihabi.cars@gmail.com
+                          </a>
+                          {' '}or call{' '}
+                          <a href="tel:+212661604965" className="text-primary hover:underline">
+                            +212 661 604 965
+                          </a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -69,8 +69,8 @@ const BookingForm = ({ car }: { car: Car }) => {
       setPhone("");
       setStartDate(undefined);
       setEndDate(undefined);
-    } catch {
-      toast.error("Failed to submit booking");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to submit booking");
     } finally {
       setLoading(false);
     }

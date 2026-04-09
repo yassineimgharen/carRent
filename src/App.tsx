@@ -28,21 +28,23 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <FloatingButtons />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/cars" element={<CarsPage />} />
-              <Route path="/cars/:id" element={<CarDetailsPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/my-bookings" element={<MyBookingsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/privacy" element={<PrivacyPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <div className="overflow-x-hidden">
+            <BrowserRouter>
+              <FloatingButtons />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/cars" element={<CarsPage />} />
+                <Route path="/cars/:id" element={<CarDetailsPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/my-bookings" element={<MyBookingsPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </div>
         </TooltipProvider>
         </QueryClientProvider>
       </AuthProvider>

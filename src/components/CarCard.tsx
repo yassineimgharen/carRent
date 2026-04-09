@@ -38,7 +38,7 @@ const CarCard = ({ car, index = 0, animate = false }: { car: Car; index?: number
             </div>
           )}
           <Badge
-            className={`absolute top-3 right-3 ${
+            className={`absolute top-3 right-3 rtl:right-auto rtl:left-3 ${
               car.is_available
                 ? "bg-success/20 text-success border-success/30"
                 : "bg-destructive/20 text-destructive border-destructive/30"

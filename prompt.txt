@@ -133,3 +133,101 @@ src/lib/api.ts — api() helper for backend calls
 src/hooks/use-auth.tsx — useAuth() returns { user, loading }
 
 Backend image upload: POST http://localhost:4000/api/cars/upload
+
+
+
+
+
+Multi-language Support : Implemented complete i18n system with French (default), Arabic (RTL), and English. Created LanguageProvider context with translations for all user-facing content across the entire site.
+
+WhatsApp Integration : Added WhatsApp contact buttons with official green icon (#25D366) on car cards and booking form, linking to +212661604965 with pre-filled messages.
+
+Featured Cars System : Added is_featured column to cars table allowing admin to control which cars appear on homepage animation instead of automatic first 3 available cars.
+
+Auto-fill Booking Form : Implemented automatic population of name and email fields for logged-in users in booking form.
+
+Hero Section Update : Changed hero text to French: "Vivez la route comme jamais auparavant" with new subtitle about personal/professional rentals.
+
+Comprehensive Footer : Created multi-section footer with company description, useful links (About Us, Terms, Privacy), quick links, and contact info.
+
+Currency System : Changed all prices from USD ($) to Moroccan Dirhams (DH for FR/AR, MAD for EN). Currency symbol appears after the amount in Moroccan style.
+
+Admin Dashboard Translation : Completely translated AdminPage.tsx with all admin.* translation keys for analytics, car management, bookings, users, and messages sections.
+
+Category System Update : Changed car categories from generic types (Sedan, SUV, Sports) to actual car brands (Renault, Audi, Volkswagen, Skoda, BMW, Dacia, Hyundai) for filtering.
+
+Homepage Enhancements : Added stats bar showing +200 clients, +50 vehicles, 10 years experience, and Agadir location. Added hero search bar with text input and category dropdown that navigates to /cars with query params.
+
+Booking Status Tracking : Implemented booking status page in MyBookingsPage with visual progress tracker showing pending → confirmed → completed steps with dots and connecting lines. Removed bookings section from ProfilePage so profile only shows user info.
+
+Mobile RTL Fix : Fixed mobile menu layout issues in Arabic RTL mode by moving language selector to mobile toolbar and changing text-left to text-start for proper RTL alignment.
+
+Files and Code Summary
+src/hooks/use-language.tsx : Complete translation system with 3 languages. Contains translations object with keys for nav, hero, home, cars, booking, profile, auth, admin, contact, footer, whatsapp, search, stats, and currency. Manages language state in localStorage and sets document dir to 'rtl' for Arabic. Added currency key: 'DH' for French/Arabic, 'MAD' for English.
+
+src/App.tsx : Wrapped with LanguageProvider at top level above ThemeProvider and AuthProvider.
+
+src/components/Navbar.tsx : Added Languages icon dropdown with language selector showing Français, العربية, English. All nav labels use t() function. Mobile menu fixed for RTL with language selector in toolbar and text-start alignment.
+
+src/components/HeroSection.tsx : Hardcoded French text "Vivez la route comme jamais auparavant" and subtitle about vehicle rental. Includes HeroSearchBar component below CTA button.
+
+src/components/HeroSearchBar.tsx : New component with text search input, category dropdown, and search button. Navigates to /cars with query params (q and category).
+
+src/components/StatsBar.tsx : New component displaying 4 stats cards with icons: +200 clients, +50 vehicles, 10 years experience, Agadir location. Positioned with -mt-16 to overlap hero bottom.
+
+src/components/CarCard.tsx : WhatsApp button positioned to right of fuel type info with rounded-[10px] border. Price displays as {car.price_per_day} {t('currency')}.
+
+src/components/BookingForm.tsx : Auto-fills name (first_name + last_name) and email from useAuth user object via useEffect. Phone placeholder "+212 XXX XXX XXX". WhatsApp button with green icon. Price displays with {t('currency')} suffix.
+
+src/pages/Index.tsx : Shows featured cars with cars?.filter((c) => c.is_featured === 1). Imports and uses Footer and StatsBar components.
+
+src/pages/CarsPage.tsx : Translated title, subtitle, search placeholder, and no results message. Reads URL search params (q and category) to pre-fill filters from hero search bar.
+
+src/pages/CarDetailsPage.tsx : Car details labels translated. Price displays as {car.price_per_day} with {t('currency')}{t('cars.perDay')}.
+
+src/pages/ProfilePage.tsx : Shows only profile info (name, email, phone, city) with edit functionality. Bookings section removed and moved to MyBookingsPage.
+
+src/pages/MyBookingsPage.tsx : Displays all user bookings with status tracker showing progress steps (pending → confirmed → completed) with dots, connecting lines, and labels. Shows car name (clickable link), booking ID, status badge, dates, payment method, and total price. Fully translated.
+
+src/pages/AdminPage.tsx : Completely rewritten with useLanguage hook and t() function for all strings. All admin.* translation keys used throughout analytics cards, car form, bookings table, users table, and messages table. Price displays use {t('currency')} suffix. Default category changed to "Renault".
+
+src/components/Footer.tsx : New component with 4 columns: Company info with description, Useful Links (About Us /about, Terms /terms, Privacy /privacy), Quick Links (Home, Cars, Contact), Contact Info (address, phone, email with icons). Bottom bar with copyright. Fully translated.
+
+server/db.js : Added is_featured INTEGER NOT NULL DEFAULT 0 column to cars table. Seed data marks first 3 cars (Tesla Model 3, Ford Mustang GT, BMW X5) as featured with is_featured: 1.
+
+src/lib/supabase-helpers.ts : CAR_CATEGORIES changed from ["Sedan", "SUV", "Sports", "Luxury", "Electric", "Compact"] to ["Renault", "Audi", "Volkswagen", "Skoda", "BMW", "Dacia", "Hyundai"].
+
+Key Insights
+INSIGHT : Project located at /goinfre/yaimghar/wheelie-happy-car (42 school machine with limited /home space). npm cache moved to /goinfre/yaimghar/.npm due to space constraints.
+
+INSIGHT : Backend runs on port 4000, frontend on port 8082 (Vite). SQLite database at server/wheelie.db.
+
+INSIGHT : Admin credentials: / admin1234
+
+INSIGHT : Business phone: +212661604965, Email:
+
+INSIGHT : Business address: شارع احمد زكرياء رقم 132 بلوك ابطيح تمديد الداخلة, Agadir, Morocco
+
+INSIGHT : User preference: French as default language, wants full control over homepage featured cars
+
+INSIGHT : WhatsApp icon uses official logo SVG, green color #25D366, rounded-[10px] border with 10px radius
+
+INSIGHT : Stats values: +200 clients, +50 vehicles, 10 years experience (not 5)
+
+INSIGHT : Categories are now car brands (Renault, Audi, etc.) used for filtering, not vehicle types
+
+INSIGHT : Booking status tracking separated: ProfilePage shows only user info, MyBookingsPage shows bookings with progress tracker
+
+INSIGHT : Mobile RTL issues fixed by using text-start instead of text-left and moving language selector to toolbar
+
+Most Recent Topic
+Topic : Fixing mobile menu layout corruption in Arabic RTL mode
+
+Progress : User reported that when switching to Arabic on mobile, the design breaks - menu button hidden and content overflows screen. Fixed by modifying Navbar.tsx mobile menu implementation.
+
+Tools Used :
+fsRead : Read Navbar.tsx to analyze mobile menu structure and identify RTL layout issues
+
+fsReplace : Modified Navbar.tsx to move language selector from inside mobile menu to mobile toolbar (next to theme toggle), and changed all text-left to text-start in mobile menu buttons for proper RTL text alignment. This ensures the mobile menu works correctly in both LTR and RTL modes.
+
+Conversation history has been compacted successfully!

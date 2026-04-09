@@ -105,6 +105,24 @@ const Navbar = () => {
             <Button variant="ghost" size="icon" onClick={toggle}>
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Languages className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLanguage('fr')} className={language === 'fr' ? 'bg-primary/10' : ''}>
+                  Français
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('ar')} className={language === 'ar' ? 'bg-primary/10' : ''}>
+                  العربية
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage('en')} className={language === 'en' ? 'bg-primary/10' : ''}>
+                  English
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" size="icon" onClick={() => setMobileOpen(!mobileOpen)}>
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -132,13 +150,13 @@ const Navbar = () => {
               <>
                 <button
                   onClick={() => { navigate("/profile"); setMobileOpen(false); }}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground"
+                  className="block w-full text-start px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                   {t('nav.profile')}
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-destructive"
+                  className="block w-full text-start px-4 py-3 rounded-lg text-sm font-medium text-destructive"
                 >
                   {t('nav.logout')}
                 </button>
@@ -146,24 +164,11 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={() => { setAuthOpen(true); setMobileOpen(false); }}
-                className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-primary"
+                className="block w-full text-start px-4 py-3 rounded-lg text-sm font-medium text-primary"
               >
                 {t('nav.login')}
               </button>
             )}
-            <div className="flex items-center gap-3 px-2 pt-2 border-t border-border/30">
-              <Languages className="h-4 w-4 text-muted-foreground shrink-0" />
-              <Select value={language} onValueChange={(v) => { setLanguage(v as any); setMobileOpen(false); }}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fr">Français</SelectItem>
-                  <SelectItem value="ar">العربية</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         )}
       </nav>

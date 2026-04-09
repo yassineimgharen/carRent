@@ -40,12 +40,12 @@ router.post("/", (req, res) => {
   const car = db.prepare("SELECT * FROM cars WHERE id = ?").get(carId);
   if (!car) return res.status(400).json({ error: "Car not found" });
 
-  // Check date conflicts
-  const conflict = db.prepare(
-    "SELECT id FROM bookings WHERE car_id = ? AND status IN ('pending','confirmed') AND start_date <= ? AND end_date >= ?"
-  ).get(carId, end_date, start_date);
-  if (conflict) return res.status(409).json({ error: "Car already booked for these dates" });
+  // Check if car is available
+  if (!car.is_available) {
+    return res.status(400).json({ error: "This car is currently unavailable" });
+  }
 
+  // Get user_id from token if logged in
   const token = req.headers.authorization?.split(" ")[1];
   let user_id = null;
   if (token) {
@@ -54,6 +54,26 @@ router.post("/", (req, res) => {
       const { SECRET } = require("../middleware/auth");
       user_id = jwt.verify(token, SECRET).id;
     } catch {}
+  }
+
+  // Check if THIS USER already has an overlapping booking for this car
+  let userConflict = null;
+  if (user_id) {
+    // Check by user_id for logged-in users
+    userConflict = db.prepare(
+      "SELECT id, start_date, end_date FROM bookings WHERE car_id = ? AND user_id = ? AND status IN ('pending','confirmed') AND NOT (end_date < ? OR start_date > ?)"
+    ).get(carId, user_id, start_date, end_date);
+  } else {
+    // Check by email for non-logged-in users
+    userConflict = db.prepare(
+      "SELECT id, start_date, end_date FROM bookings WHERE car_id = ? AND customer_email = ? AND status IN ('pending','confirmed') AND NOT (end_date < ? OR start_date > ?)"
+    ).get(carId, customer_email, start_date, end_date);
+  }
+
+  if (userConflict) {
+    return res.status(409).json({ 
+      error: `You already have a booking for this car from ${userConflict.start_date} to ${userConflict.end_date}. Please cancel it first or choose different dates.` 
+    });
   }
 
   const result = db.prepare(
@@ -71,8 +91,21 @@ router.patch("/:id/status", auth, adminOnly, (req, res) => {
   res.json({ success: true });
 });
 
-router.delete("/:id", auth, adminOnly, (req, res) => {
-  db.prepare("DELETE FROM bookings WHERE id = ?").run(req.params.id);
+router.delete("/:id", auth, (req, res) => {
+  const bookingId = req.params.id;
+  const booking = db.prepare("SELECT * FROM bookings WHERE id = ?").get(bookingId);
+  
+  if (!booking) {
+    return res.status(404).json({ error: "Booking not found" });
+  }
+
+  // Allow users to delete their own pending bookings (by user_id or email), or admin to delete any booking
+  const isOwner = booking.user_id === req.user.id || booking.customer_email === req.user.email;
+  if (req.user.role !== "admin" && (!isOwner || booking.status !== "pending")) {
+    return res.status(403).json({ error: "You can only cancel your own pending bookings" });
+  }
+
+  db.prepare("DELETE FROM bookings WHERE id = ?").run(bookingId);
   res.json({ success: true });
 });
 
