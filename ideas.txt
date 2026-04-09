@@ -1,31 +1,178 @@
-Homepage additions
+1. Car Image Gallery
 
-How It Works — 3 steps: Choisissez → Réservez → Prenez la route. Simple icons, builds trust for first-time visitors
+Multiple images per car (interior, exterior, different angles)
 
-Why Choose Us — 4 cards: Prix transparents, Véhicules assurés, Support réactif, Paiement flexible
+Image slider/carousel on car details page
 
-Customer Testimonials — 3 review cards with stars, name, city
+Currently only 1 image per car
 
-Floating WhatsApp button — fixed bottom-right bubble on every page, one tap to contact
+2. Car Availability Calendar
 
-Cars & Booking
-5. Availability calendar — show booked dates on the car details page so users know when it's free
-6. Similar cars — show 3 related cars at the bottom of each car details page
-7. Price badge "Best Value" — tag the cheapest available car automatically
+Visual calendar showing booked dates for each car
 
-User Experience
-8. Booking confirmation email — send an email to the customer after booking (needs nodemailer on backend)
-9. Booking status page — user can track their booking status (pending/confirmed/completed) from profile
-10. Dark/Light mode toggle — if not already working properly
+Prevent selecting already booked dates
 
-Admin
-11. Export bookings to CSV — one button to download all bookings as a spreadsheet
-12. Low availability alert — highlight cars with 0 bookings or mark them as needing attention
+Show available/unavailable dates clearly
 
-My top picks for your Moroccan rental audience:
+3. Advanced Search & Filters
 
-1 + 2 (trust building on homepage)
+Price range slider (min-max)
 
-4 (floating WhatsApp — huge for Morocco)
+Filter by: transmission type, fuel type, seats, category
 
-8 (booking confirmation email — very professional)
+Sort by: price (low/high), newest, most popular
+
+Real-time filter results
+
+4. Customer Reviews & Ratings
+
+Star rating system (1-5 stars)
+
+Written reviews after rental completion
+
+Display average rating on car cards
+
+Builds trust and credibility
+
+5. Forgot Password / Password Reset
+
+Email-based password reset
+
+Currently no way to recover lost password
+
+💡 Medium Priority
+6. Booking Modifications
+
+Allow customers to extend/shorten rental dates
+
+Change pickup time
+
+Currently must contact admin
+
+7. Promotional Codes / Discounts
+
+Coupon code system
+
+Percentage or fixed amount discounts
+
+Seasonal promotions
+
+First-time customer discounts
+
+8. Insurance & Add-ons During Booking
+
+Extra driver (+fee)
+
+GPS rental
+
+Baby/child seat
+
+Full insurance coverage options
+
+Fuel options (full-to-full, prepaid)
+
+9. Admin Revenue Analytics Dashboard
+
+Charts showing revenue trends
+
+Most profitable cars
+
+Booking statistics by month/week
+
+Customer retention metrics
+
+10. Multi-Image Upload for Admin
+
+Drag & drop multiple images
+
+Image preview before upload
+
+Delete/reorder images
+
+Currently admin enters URLs manually
+
+🎨 Nice to Have
+11. Live Chat Widget
+
+Real-time customer support
+
+Currently only WhatsApp/email
+
+12. SMS Notifications
+
+Booking confirmations via SMS
+
+Pickup reminders via SMS
+
+Status updates via SMS
+
+13. Blog/News Section
+
+Driving tips in Morocco
+
+Travel guides
+
+New car announcements
+
+SEO benefits
+
+14. Loyalty Program
+
+Points for each rental
+
+Discounts for repeat customers
+
+VIP membership tiers
+
+15. Booking Invoice/Receipt
+
+Professional PDF invoice
+
+Downloadable after booking
+
+Include all charges breakdown
+
+16. Car Comparison Feature
+
+Compare 2-3 cars side by side
+
+Specs, prices, features comparison
+
+17. Testimonials Section
+
+Customer success stories
+
+Video testimonials
+
+Display on homepage
+
+18. Google Maps Integration
+
+Show pickup location on map
+
+Get directions button
+
+Multiple pickup locations
+
+19. Social Media Integration
+
+Share cars on Facebook/Instagram
+
+Social login (Google, Facebook)
+
+20. Booking History Export
+
+Export bookings to CSV/Excel
+
+For customer records
+
+For admin reporting
+
+🚀 Which would you like me to implement?
+My top 3 recommendations:
+
+Car Image Gallery - Most visual impact
+
+Advanced Search & Filters - Better user experience
+
+Customer Reviews & Ratings - Builds trust

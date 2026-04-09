@@ -420,9 +420,75 @@ async function sendAdminNotification(booking, car) {
   return await sendEmail(adminEmail, template);
 }
 
+async function sendPasswordResetEmail(email, resetToken, firstName) {
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+  
+  const template = {
+    subject: 'Password Reset Request - Sihabi Cars',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .button { display: inline-block; background: #667eea; color: white; padding: 15px 40px; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+          .warning { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 5px; }
+          .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔐 Password Reset Request</h1>
+          </div>
+          <div class="content">
+            <p>Hello ${firstName || 'there'},</p>
+            <p>We received a request to reset your password for your Sihabi Cars account.</p>
+            
+            <p style="text-align: center;">
+              <a href="${resetUrl}" class="button">Reset Your Password</a>
+            </p>
+
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: white; padding: 10px; border-radius: 5px; font-size: 12px;">${resetUrl}</p>
+
+            <div class="warning">
+              <strong>⚠️ Important:</strong>
+              <ul style="margin: 10px 0;">
+                <li>This link will expire in 1 hour</li>
+                <li>If you didn't request this, please ignore this email</li>
+                <li>Your password won't change until you create a new one</li>
+              </ul>
+            </div>
+
+            <p><strong>Need Help?</strong></p>
+            <p>Contact us at:</p>
+            <ul>
+              <li>📧 Email: sihabi.cars@gmail.com</li>
+              <li>📱 Phone: +212 661 604 965</li>
+            </ul>
+
+            <div class="footer">
+              <p>© 2026 Sihabi Cars - Your trusted car rental partner in Morocco</p>
+              <p>132 Rue Ahmed Zakaria, Bloc Abtih Extension Dakhla, Agadir</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  return await sendEmail(email, template);
+}
+
 module.exports = {
   sendBookingConfirmation,
   sendStatusChangeEmail,
   sendReminderEmail,
   sendAdminNotification,
+  sendPasswordResetEmail,
 };

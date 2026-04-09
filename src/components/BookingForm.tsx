@@ -68,13 +68,9 @@ const BookingForm = ({ car }: { car: Car }) => {
         payment_method: paymentMethod,
       });
       toast.success("Booking submitted successfully!");
-      setName("");
-      setEmail("");
-      setPhone("");
-      setCin("");
-      setDriverLicense("");
-      setStartDate(undefined);
-      setEndDate(undefined);
+      
+      // Redirect to my bookings page
+      window.location.href = "/my-bookings";
     } catch (error: any) {
       toast.error(error.message || "Failed to submit booking");
     } finally {
@@ -140,7 +136,8 @@ const BookingForm = ({ car }: { car: Car }) => {
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs font-medium">Payment Method *</Label>
+        <Label className="text-xs font-medium">{t('booking.paymentMethod')}</Label>
+        <p className="text-xs text-muted-foreground">{t('booking.paymentNote')}</p>
         <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="grid grid-cols-2 gap-2">
           <Label
             htmlFor="cash"
@@ -151,7 +148,7 @@ const BookingForm = ({ car }: { car: Car }) => {
           >
             <RadioGroupItem value="cash" id="cash" className="h-3.5 w-3.5" />
             <Banknote className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium">Cash</span>
+            <span className="text-xs font-medium">{t('booking.cash')}</span>
           </Label>
           <Label
             htmlFor="card"
@@ -162,7 +159,7 @@ const BookingForm = ({ car }: { car: Car }) => {
           >
             <RadioGroupItem value="card" id="card" className="h-3.5 w-3.5" />
             <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium">Card</span>
+            <span className="text-xs font-medium">{t('booking.card')}</span>
           </Label>
         </RadioGroup>
       </div>

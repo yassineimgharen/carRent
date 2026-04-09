@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Navigate } from "react-router-dom";
 import { Calendar, Car, CreditCard, DollarSign, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,9 +86,25 @@ const MyBookingsPage = () => {
             <p className="text-sm text-muted-foreground">Start exploring our cars and make your first reservation!</p>
           </div>
         ) : (
-          <div className="grid gap-4">
-            {bookings.map((b: any) => (
-              <div key={b.id} className="glass-card p-6 space-y-4 hover:border-primary/30 transition-colors">
+          <motion.div 
+            className="grid gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {bookings.map((b: any, index: number) => (
+              <motion.div 
+                key={b.id} 
+                className="glass-card p-6 space-y-4 hover:border-primary/30 transition-colors"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.4, 
+                  delay: index * 0.1,
+                  ease: "easeOut"
+                }}
+                whileHover={{ scale: 1.01 }}
+              >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -189,9 +206,9 @@ const MyBookingsPage = () => {
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
