@@ -43,15 +43,25 @@ const MyBookingsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-bookings"] });
       queryClient.invalidateQueries({ queryKey: ["myBookings"] });
-      toast.success("Booking cancelled successfully!");
+      toast.success(t('profile.bookingCancelledSuccess'));
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to cancel booking");
+      toast.error(error.message || t('profile.bookingCancelledError'));
     },
   });
 
   const handleCancelBooking = (bookingId: number) => {
     deleteMutation.mutate(bookingId);
+  };
+
+  const getStatusLabel = (status: string) => {
+    const statusMap: Record<string, string> = {
+      pending: t('profile.status.pending'),
+      confirmed: t('profile.status.confirmed'),
+      completed: t('profile.status.completed'),
+      cancelled: t('profile.status.cancelled'),
+    };
+    return statusMap[status] || status;
   };
 
   if (loading) return null;
@@ -64,7 +74,7 @@ const MyBookingsPage = () => {
         <div className="flex items-center justify-between">
           <h1 className="font-display text-3xl font-bold">{t('profile.myBookings')}</h1>
           <Badge variant="secondary" className="text-sm">
-            {bookings?.length || 0} {bookings?.length === 1 ? 'Booking' : 'Bookings'}
+            {bookings?.length || 0} {bookings?.length === 1 ? t('profile.booking') : t('profile.bookings')}
           </Badge>
         </div>
 
@@ -87,7 +97,7 @@ const MyBookingsPage = () => {
                     <p className="text-sm text-muted-foreground">Booking ID: #{b.id}</p>
                   </div>
                   <Badge variant="outline" className={`${statusColor[b.status] ?? ""} text-sm px-3 py-1`}>
-                    {b.status.toUpperCase()}
+                    {getStatusLabel(b.status)}
                   </Badge>
                 </div>
                 
@@ -95,17 +105,17 @@ const MyBookingsPage = () => {
                   <div className="glass-card p-4 space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      <p className="text-xs font-medium">Rental Period</p>
+                      <p className="text-xs font-medium">{t('profile.rentalPeriod')}</p>
                     </div>
                     <p className="font-medium text-sm">{b.start_date}</p>
-                    <p className="text-xs text-muted-foreground">to</p>
+                    <p className="text-xs text-muted-foreground">{t('profile.to')}</p>
                     <p className="font-medium text-sm">{b.end_date}</p>
                   </div>
                   
                   <div className="glass-card p-4 space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <DollarSign className="h-4 w-4" />
-                      <p className="text-xs font-medium">Total Price</p>
+                      <p className="text-xs font-medium">{t('profile.totalPrice')}</p>
                     </div>
                     <p className="font-display font-bold text-primary text-2xl">{b.total_price} {t('currency')}</p>
                   </div>
@@ -113,7 +123,7 @@ const MyBookingsPage = () => {
                   <div className="glass-card p-4 space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <CreditCard className="h-4 w-4" />
-                      <p className="text-xs font-medium">Payment Method</p>
+                      <p className="text-xs font-medium">{t('profile.paymentMethod')}</p>
                     </div>
                     <p className="font-medium capitalize">{b.payment_method}</p>
                   </div>
@@ -121,7 +131,7 @@ const MyBookingsPage = () => {
                   <div className="glass-card p-4 space-y-1">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      <p className="text-xs font-medium">Booked On</p>
+                      <p className="text-xs font-medium">{t('profile.bookedOn')}</p>
                     </div>
                     <p className="font-medium">{new Date(b.created_at).toLocaleDateString()}</p>
                     <p className="text-xs text-muted-foreground">{new Date(b.created_at).toLocaleTimeString()}</p>
@@ -135,23 +145,23 @@ const MyBookingsPage = () => {
                       <AlertDialogTrigger asChild>
                         <Button variant="destructive" size="sm" className="w-full sm:w-auto">
                           <Trash2 className="h-4 w-4 mr-2" />
-                          Cancel Booking
+                          {t('profile.cancelBooking')}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Cancel Booking?</AlertDialogTitle>
+                          <AlertDialogTitle>{t('profile.cancelBookingTitle')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to cancel this booking for {b.car_brand} {b.car_name}? This action cannot be undone.
+                            {t('profile.cancelBookingConfirm')} {b.car_brand} {b.car_name}? {t('profile.cancelBookingWarning')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Keep Booking</AlertDialogCancel>
+                          <AlertDialogCancel>{t('profile.keepBooking')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleCancelBooking(b.id)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            Yes, Cancel Booking
+                            {t('profile.yesCancelBooking')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -164,13 +174,13 @@ const MyBookingsPage = () => {
                     <div className="flex items-start gap-3 p-3 rounded-lg bg-warning/10 border border-warning/30">
                       <AlertCircle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-warning">Booking Confirmed</p>
+                        <p className="text-sm font-medium text-warning">{t('profile.bookingConfirmed')}</p>
                         <p className="text-xs text-muted-foreground">
-                          This booking has been confirmed by the admin. To cancel, please contact us at{' '}
+                          {t('profile.bookingConfirmedText')}{' '}
                           <a href="mailto:sihabi.cars@gmail.com" className="text-primary hover:underline">
                             sihabi.cars@gmail.com
                           </a>
-                          {' '}or call{' '}
+                          {' '}{t('profile.orCall')}{' '}
                           <a href="tel:+212661604965" className="text-primary hover:underline">
                             +212 661 604 965
                           </a>

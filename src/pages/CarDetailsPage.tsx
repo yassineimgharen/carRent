@@ -49,14 +49,58 @@ const CarDetailsPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20 md:pb-0">
       <Navbar />
-      <div className="container pt-24 pb-16">
-        <Button asChild variant="ghost" className="mb-6 text-muted-foreground">
+      <div className="container pt-20 md:pt-24 pb-6 md:pb-16 px-3 md:px-4">
+        <Button asChild variant="ghost" className="mb-3 md:mb-6 text-muted-foreground -ml-2 h-9">
           <Link to="/cars"><ArrowLeft className="mr-2 h-4 w-4" /> {t('nav.cars')}</Link>
         </Button>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        {/* Mobile Layout */}
+        <div className="lg:hidden space-y-4">
+          <CarGallery images={images ?? []} carName={car.name} />
+
+          {/* Car Info Card */}
+          <div className="glass-card p-4 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{car.brand}</p>
+                <h1 className="font-display text-xl font-bold leading-tight">{car.name}</h1>
+              </div>
+              <div className="flex flex-col gap-2 items-end">
+                <Badge variant="outline" className={`text-xs ${car.is_available ? "border-success/30 text-success" : "border-destructive/30 text-destructive"}`}>
+                  {car.is_available ? t('cars.available') : t('cars.unavailable')}
+                </Badge>
+                <Badge variant="secondary" className="text-xs">{car.category}</Badge>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 text-sm text-muted-foreground pt-3 border-t border-border/50">
+              <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> {car.seats}</span>
+              <span className="flex items-center gap-1.5"><Gauge className="h-4 w-4" /> {car.transmission}</span>
+              <span className="flex items-center gap-1.5"><Fuel className="h-4 w-4" /> {car.fuel_type}</span>
+            </div>
+
+            <div className="pt-3 border-t border-border/50">
+              <div className="flex items-baseline gap-2">
+                <span className="font-display text-3xl font-bold text-primary">{car.price_per_day}</span>
+                <span className="text-sm text-muted-foreground">{t('currency')}{t('cars.perDay')}</span>
+              </div>
+            </div>
+
+            {car.description && (
+              <div className="pt-3 border-t border-border/50">
+                <p className="text-sm text-muted-foreground leading-relaxed">{car.description}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Booking Form */}
+          <BookingForm car={car} />
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-8">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="lg:col-span-2 space-y-6">
             <CarGallery images={images ?? []} carName={car.name} />
 
@@ -82,12 +126,19 @@ const CarDetailsPage = () => {
 
               <p className="font-display text-3xl font-bold text-primary">{car.price_per_day} <span className="text-sm font-normal text-muted-foreground">{t('currency')}{t('cars.perDay')}</span></p>
 
-              {car.description && <p className="text-muted-foreground leading-relaxed">{car.description}</p>}
+              {car.description && (
+                <div className="glass-card p-6">
+                  <h2 className="font-display text-lg font-semibold mb-3">Description</h2>
+                  <p className="text-muted-foreground leading-relaxed">{car.description}</p>
+                </div>
+              )}
             </div>
           </motion.div>
 
           <div className="lg:col-span-1">
-            <BookingForm car={car} />
+            <div className="lg:sticky lg:top-24">
+              <BookingForm car={car} />
+            </div>
           </div>
         </div>
       </div>

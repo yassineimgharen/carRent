@@ -24,12 +24,12 @@ const CarCard = ({ car, index = 0, animate = false }: { car: Car; index?: number
       whileHover={{ scale: 1.03, transition: { duration: 0.3 } }}
     >
       <Link to={`/cars/${car.id}`} className="group block glass-card overflow-hidden hover:border-primary/30 transition-all duration-300">
-        <div className="aspect-video relative overflow-hidden bg-secondary">
+        <div className="aspect-[3/2] relative overflow-hidden bg-secondary">
           {car.image_url ? (
             <img
               src={car.image_url}
               alt={car.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-full object-cover transition-transform duration-500"
               loading="lazy"
             />
           ) : (
