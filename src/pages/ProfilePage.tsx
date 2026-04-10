@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { updateMe, fetchMyBookings } from "@/lib/supabase-helpers";
+import { updateMe, fetchMyBookings, deleteBooking } from "@/lib/supabase-helpers";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
@@ -9,7 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Navigate, Link } from "react-router-dom";
-import { User, Pencil, Check, X, Car, Calendar, CreditCard } from "lucide-react";
+import { User, Pencil, Check, X, Car, Calendar, CreditCard, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ProfilePage = () => {
   const { user, loading } = useAuth();
@@ -22,6 +34,21 @@ const ProfilePage = () => {
     mutationFn: () => updateMe(form),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["me"] }); setEditing(false); },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-bookings"] });
+      toast.success("Booking deleted successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete booking");
+    },
+  });
+
+  const handleDeleteBooking = (bookingId: number) => {
+    deleteMutation.mutate(bookingId);
+  };
 
   const { data: bookings } = useQuery({ queryKey: ["my-bookings"], queryFn: fetchMyBookings });
 
@@ -161,6 +188,36 @@ const ProfilePage = () => {
                         {b.total_price} {t('currency')}
                       </div>
                     </div>
+
+                    {/* Admin Delete Button */}
+                    {user.role === 'admin' && (
+                      <div className="pt-3 border-t border-border/40 flex justify-end">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Booking #{b.id}?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this booking for {b.car_brand} {b.car_name}? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteBooking(b.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Yes, Delete Booking
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    )}
                   </div>
                 );
               })}

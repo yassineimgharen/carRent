@@ -16,3 +16,10 @@ export const api = async (path: string, options: RequestInit = {}) => {
   if (!res.ok) throw new Error(data.error || "Request failed");
   return data;
 };
+
+export const changeUserStatus = async (userId: number, account_status: string, status_reason?: string) => {
+  return api(`/users/${userId}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ account_status, status_reason }),
+  });
+};

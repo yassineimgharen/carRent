@@ -57,7 +57,7 @@ const StatsBar = () => {
   ];
 
   return (
-    <section className="relative z-10 -mt-16 container">
+    <section className="relative z-10 -mt-20 container">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

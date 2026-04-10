@@ -1,14 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchMyBookings, deleteBooking } from "@/lib/supabase-helpers";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { updateMe, fetchMyBookings, deleteBooking } from "@/lib/supabase-helpers";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Navigate } from "react-router-dom";
-import { Calendar, Car, CreditCard, DollarSign, Trash2, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Navigate, Link } from "react-router-dom";
+import { User, Pencil, Check, X, Car, Calendar, CreditCard, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -155,7 +157,7 @@ const MyBookingsPage = () => {
                   </div>
                 </div>
 
-                {/* Cancel/Contact Admin Section */}
+                {/* Cancel Button for Pending Bookings */}
                 {b.status === 'pending' && (
                   <div className="pt-2 border-t border-border/50">
                     <AlertDialog>

@@ -1,248 +1,286 @@
-Car Rental Website Project - Complete Overview
-Project Description
-I'm building a car rental website called "Sihabi Cars" (Wheelie Happy Car) - a full-stack web application for a Moroccan car rental company. The website allows customers to browse cars, make bookings, and manage their reservations. It includes an admin dashboard for managing cars, bookings, users, and messages.
+# Car Rental Website Project - Complete Context
 
-Tech Stack
-Frontend : React + TypeScript + Vite
+## Project Overview
+I'm building a full-stack car rental website called "Sihabi Cars" for a Moroccan car rental company. The tech stack is:
+- **Frontend**: React + TypeScript + Vite + Tailwind CSS + shadcn/ui + Framer Motion
+- **Backend**: Node.js + Express + SQLite
+- **Email**: Nodemailer with Gmail SMTP
+- **Multi-language**: French (default), Arabic, English
 
-UI Framework : Tailwind CSS + shadcn/ui components
-
-Backend : Node.js + Express
-
-Database : Supabase (PostgreSQL)
-
-State Management : TanStack Query (React Query)
-
-Routing : React Router
-
-Animations : Framer Motion
-
-Forms : React Hook Form
-
-Notifications : Sonner (toast notifications)
-
-Icons : Lucide React
+## Project Structure
 
 wheelie-happy-car/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── Navbar.tsx
-│   │   ├── BookingForm.tsx
-│   │   ├── CarGallery.tsx
-│   │   └── ui/             # shadcn/ui components
-│   ├── pages/              # Page components
-│   │   ├── HomePage.tsx
-│   │   ├── CarsPage.tsx
-│   │   ├── CarDetailsPage.tsx
-│   │   ├── MyBookingsPage.tsx
-│   │   ├── AdminPage.tsx
-│   │   ├── ContactPage.tsx
-│   │   ├── AboutPage.tsx
-│   │   ├── TermsPage.tsx
-│   │   └── PrivacyPage.tsx
-│   ├── hooks/              # Custom React hooks
-│   │   ├── use-auth.tsx
-│   │   └── use-language.tsx
-│   ├── lib/                # Utility functions
-│   │   └── supabase-helpers.ts
-│   └── App.tsx
-├── server/
-│   └── routes/
-│       └── bookings.js
-└── README.md
+├── src/ # Frontend React app
+│ ├── components/ # Reusable components
+│ ├── pages/ # Page components
+│ ├── hooks/ # Custom hooks (auth, language, theme)
+│ └── lib/ # API helpers and utilities
+├── server/ # Backend Node.js server
+│ ├── routes/ # API routes
+│ ├── services/ # Email service, scheduler
+│ ├── middleware/ # Auth middleware
+│ ├── db.js # Database initialization
+│ └── index.js # Server entry point
+└── server/wheelie.db # SQLite database
+
+
+
+## Database Schema (SQLite)
+
+### users table
+- id, email, password (bcrypt hashed)
+- first_name, last_name, phone, city
+- cin, driver_license (newly added)
+- role (user/admin), created_at
+- reset_token, reset_token_expiry (for password reset)
+- manual_spent_adjustment (for admin adjustments)
+
+### cars table
+- id, name, brand, category
+- price_per_day, image_url, description
+- seats, transmission, fuel_type
+- is_available, is_featured
+- created_at, updated_at
 
-Key Features
-1. Multi-language Support (i18n)
-Languages: French (default), Arabic (RTL support), English
+### bookings table
+- id, car_id, user_id
+- customer_name, customer_email, customer_phone
+- cin, driver_license (customer documents)
+- start_date, end_date, total_price
+- payment_method (cash/card), status (pending/confirmed/completed/cancelled)
+- language (fr/ar/en - for emails)
+- created_at
 
-Implementation: Custom useLanguage hook with translation keys
+### contact_messages table
+- id, name, email, phone, message
+- status (unread/read/replied)
+- created_at
 
-File: src/hooks/use-language.tsx
+## Key Features Implemented
 
-All UI text uses translation keys like t('nav.home'), t('cars.bookNow'), etc.
+### 1. Authentication System
+- Login/Register with JWT tokens
+- Password reset via email with secure tokens (1-hour expiry)
+- Dedicated login page at `/login`
+- Auth modal for quick access
+- Protected routes for admin and user areas
 
-Language preference stored in localStorage
+### 2. Multi-Language Support (FR/AR/EN)
+- Language switcher in navbar
+- All UI elements translated
+- Emails sent in user's selected language
+- RTL support for Arabic
 
-Arabic language automatically enables RTL (right-to-left) layout
+### 3. Car Management
+- Browse cars with filters and search
+- Car details page with booking form
+- Admin can add/edit/delete cars
+- Featured cars on homepage
+- Availability status
 
-2. Authentication System
-User registration and login
+### 4. Booking System
+- Date range picker with validation
+- Auto-fill user info (name, email, phone, CIN, driver license) from profile
+- Payment method selection (cash/card - both paid at pickup)
+- CIN and driver license fields required
+- Redirect to "My Bookings" after successful booking
+- Users can cancel pending bookings
 
-Role-based access (user/admin)
+### 5. Email Notification System (Nodemailer + Gmail SMTP)
+**4 Email Types:**
+- **Booking Confirmation** - Sent to customer on new booking
+- **Admin Alert** - Sent to admin on new booking
+- **Status Change** - Sent when admin changes booking status
+- **24h Reminder** - Automated cron job sends reminders before pickup
 
-Protected routes
+**Email Configuration (.env):**
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=yassineamghar2000@gmail.com
+SMTP_PASS=ecdf wgww nxoe akxj
+FRONTEND_URL=http://localhost:8080
 
-User profile management
 
-File: src/hooks/use-auth.tsx
+Cron Scheduler : Runs every hour to check for bookings starting in 24 hours
 
-3. Car Management
-Browse available cars
+6. User Profile
+View/edit personal info (name, phone, city, CIN, driver license)
 
-Filter by category
+View booking history with status tracking
 
-Search by name/brand
+Progress bar showing booking status (pending → confirmed → completed)
 
-Car details page with image gallery
+7. Admin Dashboard
+Analytics : Daily/monthly/yearly revenue, total bookings/users/cars
 
-Admin can add/edit/delete cars
+Car Management : Add/edit/delete cars, manage availability
 
-Multiple images per car with gallery view
+Booking Management : View all bookings, change status, search/filter
 
-Car specifications (seats, transmission, fuel type, etc.)
+User Management : View users, edit details, track spending
 
-4. Booking System
-Date range selection for rentals
+Messages : View contact form submissions
 
-Price calculation based on rental days
+8. Scroll Animations (Framer Motion)
+Homepage : Hero section, stats bar with count-up animation, featured cars slide-in
 
-Payment method selection (cash/card)
+About Page : Staggered fade-in sections
 
-Booking status workflow:
+Terms & Privacy : Slide-in sections with delays
 
-Pending: Initial booking, user can cancel
+Footer : Fade-in on scroll, social icons bounce on hover, links with slide underline
 
-Confirmed: Admin confirmed, user must contact admin to cancel
+My Bookings : Staggered card animations
 
-Completed: Rental finished
+Contact Section : Slide-in from left/right
 
-Cancelled: Booking cancelled
+9. UI/UX Enhancements
+Glass-morphism design (glass-card class)
 
-My Bookings page for users to view their reservations
+Smooth page transitions
 
-Current file: src/pages/MyBookingsPage.tsx
+Hover effects on cards and buttons
 
-5. Admin Dashboard
-Analytics (revenue tracking: daily, monthly, yearly, total)
+Mobile-responsive design
 
-Car management (CRUD operations)
+WhatsApp contact integration
 
-Booking management (view, update status, delete)
+Stats bar with animated counters
 
-User management (view users, edit roles)
+API Endpoints
+Auth Routes ( /api/auth)
+POST /login - User login
 
-Contact messages management
+POST /register - User registration
 
-Search and filter functionality
+POST /forgot-password - Request password reset
 
-6. Contact System
-Contact form with email integration
+GET /validate-reset-token - Validate reset token
 
-WhatsApp integration for direct messaging
+POST /reset-password - Reset password with token
 
-Business hours and location information
+Car Routes ( /api/cars)
+GET / - Get all cars (with filters)
 
-Google Maps integration
+GET /:id - Get car by ID
 
-7. UI Components
-Responsive design (mobile-first)
+POST / - Create car (admin only)
 
-Glass morphism effects
+PUT /:id - Update car (admin only)
 
-Smooth animations with Framer Motion
+DELETE /:id - Delete car (admin only)
 
-Toast notifications for user feedback
+Booking Routes ( /api/bookings)
+GET / - Get all bookings (admin only)
 
-Modal dialogs for confirmations
+GET /my - Get user's bookings
 
-Badge components for status display
+GET /:id - Get booking by ID
 
-Database Schema (Supabase)
-Tables:
-users - User accounts (id, email, password, first_name, last_name, phone, city, role)
+POST / - Create booking
 
-cars - Car inventory (id, brand, name, category, price_per_day, seats, transmission, fuel_type, description, is_available, is_featured)
+PATCH /:id/status - Update booking status (admin only)
 
-car_images - Car photos (id, car_id, image_url, display_order)
+DELETE /:id - Cancel booking
 
-bookings - Rental bookings (id, car_id, user_id, customer_name, customer_email, customer_phone, start_date, end_date, total_price, payment_method, status, created_at)
+User Routes ( /api/users)
+GET /me - Get current user profile
 
-contact_messages - Contact form submissions
+PUT /me - Update current user profile
 
-Current Status & Recent Work
-What I've Been Working On:
-I've been implementing full internationalization (i18n) for the My Bookings page (src/pages/MyBookingsPage.tsx).
+GET / - Get all users (admin only)
 
-Recent Changes Made:
-✅ Translated booking confirmation message for confirmed bookings
+GET /analytics - Get analytics data (admin only)
 
-✅ Translated cancel booking dialog and buttons
+PUT /:id - Update user (admin only)
 
-✅ Translated "Booking/Bookings" count badge
+Contact Routes ( /api/contact)
+POST / - Submit contact form
 
-✅ Translated booking details labels:
+Environment Variables (.env)
 
-Rental Period
+# Supabase (not actively used, legacy)
+VITE_SUPABASE_PROJECT_ID=wtuwkzzuatutudbragff
+VITE_SUPABASE_PUBLISHABLE_KEY=...
+VITE_SUPABASE_URL=https://wtuwkzzuatutudbragff.supabase.co
 
-Total Price
+# Admin Account
+ADMIN_EMAIL=admin@drivex.com
+ADMIN_PASSWORD=admin1234
+ADMIN_FIRST_NAME=sihabi
+ADMIN_LAST_NAME=simustapha
+ADMIN_PHONE=+21261604965
+ADMIN_CITY=agadir
 
-Payment Method
+# Email Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=yassineamghar2000@gmail.com
+SMTP_PASS=ecdf wgww nxoe akxj
+FRONTEND_URL=http://localhost:8080
 
-Booked On
 
-"to" (date separator)
+Recent Changes & Current State
+Latest Updates:
+✅ Added CIN and driver license fields to booking form and user profile
 
-✅ Translated booking status badges (PENDING, CONFIRMED, COMPLETED, CANCELLED)
+✅ Implemented password reset system with email verification
 
-Translation Keys Added (in use-language.tsx):
+✅ Added confirm password field to registration
 
-'profile.booking': 'Booking' / 'Réservation' / 'حجز'
-'profile.bookings': 'Bookings' / 'Réservations' / 'حجوزات'
-'profile.rentalPeriod': 'Rental Period' / 'Période de location' / 'فترة الإيجار'
-'profile.to': 'to' / 'à' / 'إلى'
-'profile.totalPrice': 'Total Price' / 'Prix total' / 'السعر الإجمالي'
-'profile.paymentMethod': 'Payment Method' / 'Méthode de paiement' / 'طريقة الدفع'
-'profile.bookedOn': 'Booked On' / 'Réservé le' / 'تم الحجز في'
-'profile.bookingConfirmed': 'Booking Confirmed' / 'Réservation confirmée' / 'تم تأكيد الحجز'
-'profile.bookingConfirmedText': Contact message text
-'profile.orCall': 'or call' / 'ou appeler' / 'أو الاتصال'
-'profile.cancelBooking': 'Cancel Booking' / 'Annuler la réservation' / 'إلغاء الحجز'
-'profile.status.pending': 'Pending' / 'En attente' / 'قيد الانتظار'
-'profile.status.confirmed': 'Confirmed' / 'Confirmé' / 'مؤكد'
-'profile.status.completed': 'Completed' / 'Terminé' / 'مكتمل'
-'profile.status.cancelled': 'Cancelled' / 'Annulé' / 'ملغى'
+✅ Implemented scroll animations throughout the site
 
-Current Location in Project
-File: src/pages/MyBookingsPage.tsx
-Line: Around line 78 (in CarGallery.tsx was shown in context, but we've been working on MyBookingsPage.tsx)
+✅ Auto-fill booking form with user profile data (phone, CIN, driver license)
 
-Business Information
-Company: Sihabi Cars (Moroccan car rental company)
+✅ Updated User type to include cin and driver_license fields
 
-Email:
+✅ Updated backend /users/me endpoints to handle cin and driver_license
 
-Phone: +212 661 604 965
+Known Issues:
+None currently - all features working
 
-Location: 132 Ahmed Zakaria Street, Abtih Block Dakhla Extension, Agadir, Morocco
+Company Information:
+Company Name : Sihabi Cars
 
-What's Working:
-✅ User authentication and registration
+Email : /
 
-✅ Car browsing and filtering
+Phone : +212 661 604 965
 
-✅ Booking creation and management
+Address : 132 Ahmed Zakaria Street, Bloc Abtih Extension Dakhla, Agadir, Morocco
 
-✅ Admin dashboard with full CRUD operations
+Social : Instagram, Facebook, WhatsApp, TikTok
 
-✅ Multi-language support (FR/AR/EN)
+Important Notes
+Database file: server/wheelie.db (SQLite)
 
-✅ Responsive design
+JWT secret is hardcoded in server/middleware/auth.js
 
-✅ My Bookings page with full translations
+Email system works in "preview mode" (console logs) if SMTP not configured
 
-✅ Status-based booking actions (cancel for pending, contact info for confirmed)
+Payment is NOT processed online - both cash and card are paid at vehicle pickup
 
-Potential Next Steps:
-Continue translating other pages if needed
+Default language is French (fr)
 
-Add more features to admin dashboard
+Admin dashboard accessible at /admin
 
-Implement email notifications
+Booking confirmation redirects to /my-bookings page
 
-Add booking calendar view
+Next Steps / Potential Features
+Car image gallery (multiple images per car)
 
-Enhance analytics dashboard
+Car availability calendar
 
-Add car availability calendar
+Advanced search filters (price range, transmission, fuel type)
 
-Copy this entire prompt and paste it to the new AI to give them complete context about your project!
+Customer reviews and ratings
+
+Promotional codes/discounts
+
+Insurance and add-ons during booking
+
+Booking modifications
+
+SMS notifications
+
+Current Status : All core features are implemented and working. The application is fully functional with authentication, booking system, email notifications, multi-language support, and admin dashboard.

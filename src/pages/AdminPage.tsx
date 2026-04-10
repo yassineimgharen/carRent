@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download } from "lucide-react";
+import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download, Ban, CheckCircle, XCircle, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,9 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { fetchCars, fetchBookings, fetchAllUsers, fetchAnalytics, upsertCar, deleteCar, deleteBooking, updateBookingStatus, CAR_CATEGORIES, type Car } from "@/lib/supabase-helpers";
-import { api } from "@/lib/api";
+import { api, changeUserStatus } from "@/lib/api";
 
 const emptyForm = {
   name: "", brand: "", category: "Renault", price_per_day: 0,
@@ -44,6 +45,10 @@ const AdminPage = () => {
   const [monthlyPeriod, setMonthlyPeriod] = useState("thisMonth");
   const [yearlyPeriod, setYearlyPeriod] = useState("thisYear");
   const [uploadedImages, setUploadedImages] = useState<Array<{url: string, filename: string}>>([]);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [statusUser, setStatusUser] = useState<any>(null);
+  const [newStatus, setNewStatus] = useState("");
+  const [statusReason, setStatusReason] = useState("");
 
   const { data: cars } = useQuery({ queryKey: ["cars"], queryFn: fetchCars });
   const { data: bookings } = useQuery({ queryKey: ["bookings"], queryFn: fetchBookings });
@@ -126,6 +131,18 @@ const AdminPage = () => {
       console.error('Error:', error);
       toast.error("Failed to update user: " + (error.message || "Unknown error"));
     },
+  });
+
+  const changeStatusMutation = useMutation({
+    mutationFn: ({ userId, account_status, status_reason }: { userId: number; account_status: string; status_reason?: string }) => 
+      changeUserStatus(userId, account_status, status_reason),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] });
+      setStatusDialogOpen(false);
+      setStatusReason("");
+      toast.success("Account status updated!");
+    },
+    onError: (error: any) => toast.error(error.message || "Failed to update status"),
   });
 
   const openEdit = (car: Car) => {
@@ -217,6 +234,7 @@ const AdminPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="analytics">{t('admin.analytics')}</SelectItem>
+                <SelectItem value="charts">Charts</SelectItem>
                 <SelectItem value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</SelectItem>
                 <SelectItem value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</SelectItem>
                 <SelectItem value="users">{t('admin.usersTab')} ({users?.length ?? 0})</SelectItem>
@@ -227,6 +245,7 @@ const AdminPage = () => {
           {/* Desktop: tabs */}
           <TabsList className="hidden md:flex bg-secondary">
             <TabsTrigger value="analytics">{t('admin.analytics')}</TabsTrigger>
+            <TabsTrigger value="charts"><BarChart3 className="h-4 w-4 mr-2" />Charts</TabsTrigger>
             <TabsTrigger value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="users">{t('admin.usersTab')} ({users?.length ?? 0})</TabsTrigger>
@@ -316,6 +335,10 @@ const AdminPage = () => {
                 <p className="font-display text-3xl font-bold">{analytics?.cars ?? 0}</p>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="charts" className="space-y-6">
+            <AnalyticsDashboard />
           </TabsContent>
 
           <TabsContent value="cars" className="space-y-4">
@@ -692,6 +715,7 @@ const AdminPage = () => {
                     <TableHead>{t('admin.contact')}</TableHead>
                     <TableHead>{t('admin.city')}</TableHead>
                     <TableHead>{t('admin.role')}</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>{t('admin.bookingsCount')}</TableHead>
                     <TableHead>{t('admin.totalSpent')}</TableHead>
                     <TableHead>{t('admin.joined')}</TableHead>
@@ -717,16 +741,37 @@ const AdminPage = () => {
                       <TableCell>
                         <Badge variant={u.role === "admin" ? "default" : "secondary"}>{u.role}</Badge>
                       </TableCell>
+                      <TableCell>
+                        {u.account_status === 'active' && <Badge variant="outline" className="border-green-500/30 text-green-500"><CheckCircle className="h-3 w-3 mr-1" />{t('admin.accountActive')}</Badge>}
+                        {u.account_status === 'suspended' && <Badge variant="outline" className="border-amber-500/30 text-amber-500"><XCircle className="h-3 w-3 mr-1" />{t('admin.accountSuspended')}</Badge>}
+                        {u.account_status === 'banned' && <Badge variant="outline" className="border-red-500/30 text-red-500"><Ban className="h-3 w-3 mr-1" />{t('admin.accountBanned')}</Badge>}
+                      </TableCell>
                       <TableCell className="font-semibold">{u.booking_count}</TableCell>
                       <TableCell className="font-display font-semibold text-primary whitespace-nowrap">{u.total_spent}{t('currency')}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => { setSelectedUser(u); setUserEditOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => { setSelectedUser(u); setUserEditOpen(true); }}><Pencil className="h-4 w-4" /></Button>
+                          {u.id !== user?.id && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => { 
+                                setStatusUser(u); 
+                                setNewStatus(u.account_status || 'active');
+                                setStatusReason(u.status_reason || '');
+                                setStatusDialogOpen(true); 
+                              }}
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
                   {filteredUsers.length === 0 && (
-                    <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{searchQuery ? t('admin.noUsersSearch') : t('admin.noUsers')}</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">{searchQuery ? t('admin.noUsersSearch') : t('admin.noUsers')}</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -806,6 +851,58 @@ const AdminPage = () => {
                     </div>
                     <Button type="submit" className="w-full rounded-full font-display" disabled={updateUserMutation.isPending}>
                       {updateUserMutation.isPending ? t('admin.saving') : t('admin.saveChanges')}
+                    </Button>
+                  </form>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-display">{t('admin.changeStatus')}</DialogTitle>
+                </DialogHeader>
+                {statusUser && (
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    changeStatusMutation.mutate({ 
+                      userId: statusUser.id, 
+                      account_status: newStatus,
+                      status_reason: statusReason || undefined
+                    });
+                  }} className="space-y-4">
+                    <div className="glass-card p-4 space-y-2">
+                      <p className="text-sm text-muted-foreground">{t('admin.user')}</p>
+                      <p className="font-medium">{statusUser.first_name} {statusUser.last_name}</p>
+                      <p className="text-sm text-muted-foreground">{statusUser.email}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('admin.accountStatus')}</Label>
+                      <Select value={newStatus} onValueChange={setNewStatus}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">✅ {t('admin.statusActiveDesc')}</SelectItem>
+                          <SelectItem value="suspended">⚠️ {t('admin.statusSuspendedDesc')}</SelectItem>
+                          <SelectItem value="banned">🚫 {t('admin.statusBannedDesc')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{t('admin.statusReason')}</Label>
+                      <Textarea 
+                        value={statusReason} 
+                        onChange={(e) => setStatusReason(e.target.value)}
+                        placeholder={t('admin.statusReasonPlaceholder')}
+                        rows={3}
+                      />
+                    </div>
+                    {newStatus !== 'active' && (
+                      <div className="glass-card p-3 border-amber-500/30">
+                        <p className="text-xs text-amber-500">⚠️ {t('admin.statusWarning')}</p>
+                      </div>
+                    )}
+                    <Button type="submit" className="w-full rounded-full font-display" disabled={changeStatusMutation.isPending}>
+                      {changeStatusMutation.isPending ? t('admin.updating') : t('admin.updateStatus')}
                     </Button>
                   </form>
                 )}

@@ -30,7 +30,7 @@ router.put("/me/password", auth, (req, res) => {
 
 router.get("/", auth, adminOnly, (req, res) => {
   const users = db.prepare(`
-    SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.city, u.role, u.created_at,
+    SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.city, u.role, u.account_status, u.status_reason, u.created_at,
            COUNT(b.id) as booking_count,
            COALESCE(SUM(b.total_price), 0) + COALESCE(u.manual_spent_adjustment, 0) as total_spent
     FROM users u
@@ -107,6 +107,104 @@ router.get("/analytics", auth, adminOnly, (req, res) => {
   });
 });
 
+router.get("/analytics/charts", auth, adminOnly, (req, res) => {
+  // Revenue trend (last 12 months)
+  const revenueTrend = db.prepare(`
+    SELECT 
+      strftime('%Y-%m', created_at) as month,
+      COALESCE(SUM(total_price), 0) as revenue,
+      COUNT(*) as bookings
+    FROM bookings
+    WHERE created_at >= date('now', '-12 months')
+    GROUP BY strftime('%Y-%m', created_at)
+    ORDER BY month ASC
+  `).all();
+
+  // Most profitable cars
+  const profitableCars = db.prepare(`
+    SELECT 
+      c.id,
+      c.name,
+      c.brand,
+      c.image_url,
+      COUNT(b.id) as booking_count,
+      COALESCE(SUM(b.total_price), 0) as total_revenue
+    FROM cars c
+    LEFT JOIN bookings b ON c.id = b.car_id
+    GROUP BY c.id
+    ORDER BY total_revenue DESC
+    LIMIT 10
+  `).all();
+
+  // Booking statistics by status
+  const bookingsByStatus = db.prepare(`
+    SELECT 
+      status,
+      COUNT(*) as count,
+      COALESCE(SUM(total_price), 0) as revenue
+    FROM bookings
+    GROUP BY status
+  `).all();
+
+  // Monthly bookings trend (last 12 months)
+  const bookingsTrend = db.prepare(`
+    SELECT 
+      strftime('%Y-%m', created_at) as month,
+      COUNT(*) as count
+    FROM bookings
+    WHERE created_at >= date('now', '-12 months')
+    GROUP BY strftime('%Y-%m', created_at)
+    ORDER BY month ASC
+  `).all();
+
+  // Customer retention (repeat customers)
+  const customerRetention = db.prepare(`
+    SELECT 
+      user_id,
+      customer_email,
+      COUNT(*) as booking_count,
+      COALESCE(SUM(total_price), 0) as total_spent
+    FROM bookings
+    WHERE user_id IS NOT NULL
+    GROUP BY user_id
+    HAVING booking_count > 1
+    ORDER BY booking_count DESC
+    LIMIT 20
+  `).all();
+
+  // Payment method distribution
+  const paymentMethods = db.prepare(`
+    SELECT 
+      payment_method,
+      COUNT(*) as count,
+      COALESCE(SUM(total_price), 0) as revenue
+    FROM bookings
+    GROUP BY payment_method
+  `).all();
+
+  // Weekly revenue (last 8 weeks)
+  const weeklyRevenue = db.prepare(`
+    SELECT 
+      strftime('%Y-W%W', created_at) as week,
+      COALESCE(SUM(total_price), 0) as revenue,
+      COUNT(*) as bookings
+    FROM bookings
+    WHERE created_at >= date('now', '-56 days')
+    GROUP BY strftime('%Y-W%W', created_at)
+    ORDER BY week ASC
+  `).all();
+
+  res.json({
+    revenueTrend,
+    profitableCars,
+    bookingsByStatus,
+    bookingsTrend,
+    customerRetention,
+    paymentMethods,
+    weeklyRevenue,
+  });
+});
+
 router.put("/:id", auth, adminOnly, (req, res) => {
   const { first_name, last_name, email, phone, city, role, total_spent } = req.body;
   const userId = parseInt(req.params.id);
@@ -141,7 +239,7 @@ router.put("/:id", auth, adminOnly, (req, res) => {
   }
   
   const user = db.prepare(`
-    SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.city, u.role, u.created_at,
+    SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.city, u.role, u.account_status, u.status_reason, u.created_at,
            COUNT(b.id) as booking_count,
            COALESCE(SUM(b.total_price), 0) + COALESCE(u.manual_spent_adjustment, 0) as total_spent
     FROM users u
@@ -151,6 +249,39 @@ router.put("/:id", auth, adminOnly, (req, res) => {
   `).get(userId);
   
   console.log('Returning updated user:', user);
+  res.json(user);
+});
+
+// Change user account status (suspend/ban/reactivate)
+router.patch("/:id/status", auth, adminOnly, (req, res) => {
+  const { account_status, status_reason } = req.body;
+  const userId = parseInt(req.params.id);
+  
+  if (!['active', 'suspended', 'banned'].includes(account_status)) {
+    return res.status(400).json({ error: "Invalid status. Must be: active, suspended, or banned" });
+  }
+  
+  // Prevent admin from changing their own status
+  if (userId === req.user.id) {
+    return res.status(403).json({ error: "You cannot change your own account status" });
+  }
+  
+  db.prepare(`
+    UPDATE users 
+    SET account_status=?, status_reason=?, status_changed_at=datetime('now'), status_changed_by=?
+    WHERE id=?
+  `).run(account_status, status_reason || null, req.user.id, userId);
+  
+  const user = db.prepare(`
+    SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.city, u.role, u.account_status, u.status_reason, u.created_at,
+           COUNT(b.id) as booking_count,
+           COALESCE(SUM(b.total_price), 0) + COALESCE(u.manual_spent_adjustment, 0) as total_spent
+    FROM users u
+    LEFT JOIN bookings b ON u.id = b.user_id
+    WHERE u.id = ?
+    GROUP BY u.id
+  `).get(userId);
+  
   res.json(user);
 });
 

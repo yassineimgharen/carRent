@@ -17,7 +17,16 @@ db.exec(`
     last_name TEXT,
     phone TEXT,
     city TEXT,
+    cin TEXT,
+    driver_license TEXT,
     role TEXT NOT NULL DEFAULT 'user',
+    account_status TEXT NOT NULL DEFAULT 'active',
+    status_reason TEXT,
+    status_changed_at TEXT,
+    status_changed_by INTEGER,
+    reset_token TEXT,
+    reset_token_expiry TEXT,
+    manual_spent_adjustment REAL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 

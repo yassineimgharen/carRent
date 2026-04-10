@@ -21,6 +21,10 @@ app.use("/api/contact", require("./routes/contact"));
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
 
 // Start reminder scheduler
-startReminderScheduler();
+try {
+  startReminderScheduler();
+} catch (error) {
+  console.error("Failed to start reminder scheduler:", error.message);
+}
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

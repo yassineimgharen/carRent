@@ -30,6 +30,14 @@ router.post("/login", (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: "Invalid email or password" });
 
+  // Check account status
+  if (user.account_status === 'suspended') {
+    return res.status(403).json({ error: "Your account has been suspended. Please contact support." });
+  }
+  if (user.account_status === 'banned') {
+    return res.status(403).json({ error: "Your account has been permanently banned." });
+  }
+
   const { password: _, ...safeUser } = user;
   const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET, { expiresIn: "7d" });
   res.json({ token, user: safeUser });

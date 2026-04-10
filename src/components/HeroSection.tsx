@@ -44,12 +44,12 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
       </div>
 
-      <div className="container relative z-10 pt-24">
+      <div className="container relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-2xl space-y-6"
+          className="max-w-2xl space-y-4"
         >
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
             {t('hero.badge')}
@@ -68,7 +68,9 @@ const HeroSection = () => {
               </Link>
             </Button>
           </div>
-          <HeroSearchBar />
+          <div className="pt-2">
+            <HeroSearchBar />
+          </div>
         </motion.div>
       </div>
     </section>
