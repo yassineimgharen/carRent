@@ -57,7 +57,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS bookings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    car_id INTEGER NOT NULL REFERENCES cars(id) ON DELETE CASCADE,
+    car_id INTEGER REFERENCES cars(id) ON DELETE SET NULL,
     user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     customer_name TEXT NOT NULL,
     customer_email TEXT NOT NULL,
@@ -69,6 +69,7 @@ db.exec(`
     total_price REAL NOT NULL,
     payment_method TEXT NOT NULL DEFAULT 'card',
     status TEXT NOT NULL DEFAULT 'pending',
+    language TEXT DEFAULT 'fr',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
   );

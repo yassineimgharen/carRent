@@ -513,7 +513,13 @@ const AdminPage = () => {
                         <p className="font-medium">{b.customer_name}</p>
                         <p className="text-xs text-muted-foreground">{b.customer_email}</p>
                       </TableCell>
-                      <TableCell>{b.car_brand} {b.car_name}</TableCell>
+                      <TableCell>
+                        {b.car_name ? (
+                          <span>{b.car_brand} {b.car_name}</span>
+                        ) : (
+                          <span className="text-muted-foreground italic">{t('admin.deletedCar')}</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm whitespace-nowrap">
                         <p>{b.start_date}</p>
                         <p>{b.end_date}</p>
@@ -525,17 +531,26 @@ const AdminPage = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Select 
-                          value={["pending", "confirmed", "completed"].includes(b.status) ? b.status : "pending"} 
-                          onValueChange={(v) => statusMutation.mutate({ id: b.id, status: v })}
-                        >
-                          <SelectTrigger className="w-28 h-8 text-xs"><SelectValue placeholder="Pending" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">{t('admin.pending')}</SelectItem>
-                            <SelectItem value="confirmed">{t('admin.confirmed')}</SelectItem>
-                            <SelectItem value="completed">{t('admin.completed')}</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {b.car_name ? (
+                          <Select 
+                            value={["pending", "confirmed", "completed"].includes(b.status) ? b.status : "pending"} 
+                            onValueChange={(v) => statusMutation.mutate({ id: b.id, status: v })}
+                          >
+                            <SelectTrigger className="w-28 h-8 text-xs"><SelectValue placeholder="Pending" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">{t('admin.pending')}</SelectItem>
+                              <SelectItem value="confirmed">{t('admin.confirmed')}</SelectItem>
+                              <SelectItem value="completed">{t('admin.completed')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge variant="outline" className="border-muted-foreground/30 text-muted-foreground">
+                            {b.status === 'pending' && t('admin.pending')}
+                            {b.status === 'confirmed' && t('admin.confirmed')}
+                            {b.status === 'completed' && t('admin.completed')}
+                            {b.status === 'cancelled' && t('admin.cancelled')}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="flex justify-center gap-1">

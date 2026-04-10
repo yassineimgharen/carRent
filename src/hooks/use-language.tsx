@@ -216,6 +216,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.pending': 'En attente',
     'admin.confirmed': 'Confirmé',
     'admin.completed': 'Terminé',
+    'admin.cancelled': 'Annulé',
     'admin.noBookings': 'Aucune réservation pour le moment',
     'admin.noBookingsSearch': 'Aucune réservation ne correspond à votre recherche',
     'admin.searchBookings': 'Rechercher par client, voiture ou ID...',
@@ -292,6 +293,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.noPaymentData': 'Aucune donnée de paiement disponible',
     'admin.noRepeatCustomers': 'Pas encore de clients fidèles',
     'admin.noAnalyticsData': 'Aucune donnée analytique disponible',
+    'admin.deletedCar': '[Voiture supprimée]',
     
     // Contact
     'contact.title': 'Contactez-nous',
@@ -632,6 +634,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.pending': 'قيد الانتظار',
     'admin.confirmed': 'مؤكد',
     'admin.completed': 'مكتمل',
+    'admin.cancelled': 'ملغى',
     'admin.noBookings': 'لا توجد حجوزات حتى الآن',
     'admin.noBookingsSearch': 'لا توجد حجوزات تطابق بحثك',
     'admin.searchBookings': 'البحث بالعميل أو السيارة أو المعرف...',
@@ -708,6 +711,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.noPaymentData': 'لا توجد بيانات دفع متاحة',
     'admin.noRepeatCustomers': 'لا يوجد عملاء متكررون بعد',
     'admin.noAnalyticsData': 'لا توجد بيانات تحليلية متاحة',
+    'admin.deletedCar': '[سيارة محذوفة]',
     
     // Contact
     'contact.title': 'اتصل بنا',
@@ -1048,6 +1052,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.pending': 'Pending',
     'admin.confirmed': 'Confirmed',
     'admin.completed': 'Completed',
+    'admin.cancelled': 'Cancelled',
     'admin.noBookings': 'No bookings yet',
     'admin.noBookingsSearch': 'No bookings match your search',
     'admin.searchBookings': 'Search by customer, car, or booking ID...',
@@ -1124,6 +1129,7 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.noPaymentData': 'No payment data available',
     'admin.noRepeatCustomers': 'No repeat customers yet',
     'admin.noAnalyticsData': 'No analytics data available',
+    'admin.deletedCar': '[Deleted Car]',
     
     // Contact
     'contact.title': 'Contact Us',
