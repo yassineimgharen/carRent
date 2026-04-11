@@ -235,7 +235,7 @@ const AdminPage = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="analytics">{t('admin.analytics')}</SelectItem>
-                <SelectItem value="charts">Charts</SelectItem>
+                <SelectItem value="charts">{t('admin.chartsTab')}</SelectItem>
                 <SelectItem value="calendar">{t('admin.calendarTab')}</SelectItem>
                 <SelectItem value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</SelectItem>
                 <SelectItem value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</SelectItem>
@@ -249,7 +249,7 @@ const AdminPage = () => {
           <div className="hidden md:flex items-center gap-1 p-1 rounded-xl bg-secondary/50 border border-border/40 w-fit flex-wrap">
             {([
               { value: "analytics", icon: <TrendingUp className="h-3.5 w-3.5" />, label: t('admin.analytics') },
-              { value: "charts",    icon: <BarChart3 className="h-3.5 w-3.5" />,   label: "Charts" },
+              { value: "charts",    icon: <BarChart3 className="h-3.5 w-3.5" />,   label: t('admin.chartsTab') },
               { value: "calendar",  icon: <CalendarDays className="h-3.5 w-3.5" />, label: t('admin.calendarTab') },
               { value: "cars",      icon: <CarIcon className="h-3.5 w-3.5" />,      label: t('admin.carsTab'),     badge: cars?.length ?? 0 },
               { value: "bookings",  icon: <Calendar className="h-3.5 w-3.5" />,     label: t('admin.bookingsTab'), badge: bookings?.length ?? 0 },
@@ -513,7 +513,7 @@ const AdminPage = () => {
               />
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={exportCSV}>
-                  <Download className="mr-2 h-4 w-4" /> Export CSV
+                  <Download className="mr-2 h-4 w-4" /> {t('admin.exportCSV')}
                 </Button>
                 <Button
                   variant="outline"

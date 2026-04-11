@@ -56,7 +56,26 @@ const CarsPage = () => {
         {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="glass-card h-80 animate-pulse" />
+              <div key={i} className="glass-card overflow-hidden">
+                <div className="skeleton aspect-[3/2]" />
+                <div className="p-5 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="skeleton h-3 w-16" />
+                      <div className="skeleton h-5 w-28" />
+                    </div>
+                    <div className="space-y-2 items-end flex flex-col">
+                      <div className="skeleton h-6 w-20" />
+                      <div className="skeleton h-3 w-12" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 pt-1 border-t border-border/50">
+                    <div className="skeleton h-3 w-8" />
+                    <div className="skeleton h-3 w-16" />
+                    <div className="skeleton h-3 w-14" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : (

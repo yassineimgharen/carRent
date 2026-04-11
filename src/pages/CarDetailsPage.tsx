@@ -41,7 +41,7 @@ const CarDetailsPage = () => {
       <div className="min-h-screen">
         <Navbar />
         <div className="container pt-24 text-center">
-          <h1 className="font-display text-2xl font-bold">Car not found</h1>
+          <h1 className="font-display text-2xl font-bold">{t('cars.notFound')}</h1>
           <Button asChild className="mt-4"><Link to="/cars">{t('nav.cars')}</Link></Button>
         </div>
       </div>
@@ -128,7 +128,7 @@ const CarDetailsPage = () => {
 
               {car.description && (
                 <div className="glass-card p-6">
-                  <h2 className="font-display text-lg font-semibold mb-3">Description</h2>
+                  <h2 className="font-display text-lg font-semibold mb-3">{t('cars.description')}</h2>
                   <p className="text-muted-foreground leading-relaxed">{car.description}</p>
                 </div>
               )}

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserPlus, LogIn, AlertCircle, Clock } from "lucide-react";
+import { Form } from "react-router-dom";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[+]?[\d\s\-().]{7,15}$/;
@@ -24,6 +25,9 @@ const ErrorAlert = ({ message }: { message: string }) => {
     </div>
   );
 };
+
+const fd = new FormData();
+fd.append("email", "yassineamghar22@gmail.com");
 
 const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const { login, register } = useAuth();
