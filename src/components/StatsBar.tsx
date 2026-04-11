@@ -26,7 +26,7 @@ const Counter = ({ value, duration = 2 }: { value: string; duration?: number }) 
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0 }
     );
 
     observer.observe(node);

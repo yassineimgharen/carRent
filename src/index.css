@@ -101,10 +101,8 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     width: 100%;
+    touch-action: pan-y;
   }
 
   h1, h2, h3, h4, h5, h6 {
