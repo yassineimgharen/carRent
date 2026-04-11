@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download, Ban, CheckCircle, XCircle, BarChart3 } from "lucide-react";
+import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download, Ban, CheckCircle, XCircle, BarChart3, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import Navbar from "@/components/Navbar";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
+import BookingCalendar from "@/components/BookingCalendar";
 import { fetchCars, fetchBookings, fetchAllUsers, fetchAnalytics, upsertCar, deleteCar, deleteBooking, updateBookingStatus, CAR_CATEGORIES, type Car } from "@/lib/supabase-helpers";
 import { api, changeUserStatus } from "@/lib/api";
 
@@ -235,6 +236,7 @@ const AdminPage = () => {
               <SelectContent>
                 <SelectItem value="analytics">{t('admin.analytics')}</SelectItem>
                 <SelectItem value="charts">Charts</SelectItem>
+                <SelectItem value="calendar">{t('admin.calendarTab')}</SelectItem>
                 <SelectItem value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</SelectItem>
                 <SelectItem value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</SelectItem>
                 <SelectItem value="users">{t('admin.usersTab')} ({users?.length ?? 0})</SelectItem>
@@ -242,15 +244,43 @@ const AdminPage = () => {
               </SelectContent>
             </Select>
           </div>
-          {/* Desktop: tabs */}
-          <TabsList className="hidden md:flex bg-secondary">
-            <TabsTrigger value="analytics">{t('admin.analytics')}</TabsTrigger>
-            <TabsTrigger value="charts"><BarChart3 className="h-4 w-4 mr-2" />Charts</TabsTrigger>
-            <TabsTrigger value="cars">{t('admin.carsTab')} ({cars?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="bookings">{t('admin.bookingsTab')} ({bookings?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="users">{t('admin.usersTab')} ({users?.length ?? 0})</TabsTrigger>
-            <TabsTrigger value="messages">{t('admin.messagesTab')} ({messages?.filter((m: any) => m.status === 'unread').length ?? 0})</TabsTrigger>
-          </TabsList>
+
+          {/* Desktop: modern pill nav */}
+          <div className="hidden md:flex items-center gap-1 p-1 rounded-xl bg-secondary/50 border border-border/40 w-fit flex-wrap">
+            {([
+              { value: "analytics", icon: <TrendingUp className="h-3.5 w-3.5" />, label: t('admin.analytics') },
+              { value: "charts",    icon: <BarChart3 className="h-3.5 w-3.5" />,   label: "Charts" },
+              { value: "calendar",  icon: <CalendarDays className="h-3.5 w-3.5" />, label: t('admin.calendarTab') },
+              { value: "cars",      icon: <CarIcon className="h-3.5 w-3.5" />,      label: t('admin.carsTab'),     badge: cars?.length ?? 0 },
+              { value: "bookings",  icon: <Calendar className="h-3.5 w-3.5" />,     label: t('admin.bookingsTab'), badge: bookings?.length ?? 0 },
+              { value: "users",     icon: <UsersIcon className="h-3.5 w-3.5" />,    label: t('admin.usersTab'),    badge: users?.length ?? 0 },
+              { value: "messages",  icon: <MessageSquare className="h-3.5 w-3.5" />,label: t('admin.messagesTab'), badge: messages?.filter((m: any) => m.status === 'unread').length ?? 0, badgeAlert: (messages?.filter((m: any) => m.status === 'unread').length ?? 0) > 0 },
+            ] as const).map((item) => (
+              <button
+                key={item.value}
+                onClick={() => setActiveTab(item.value)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === item.value
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+                {'badge' in item && (
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                    activeTab === item.value
+                      ? "bg-primary-foreground/20 text-primary-foreground"
+                      : (item as any).badgeAlert
+                        ? "bg-destructive/20 text-destructive"
+                        : "bg-border text-muted-foreground"
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
 
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -339,6 +369,10 @@ const AdminPage = () => {
 
           <TabsContent value="charts" className="space-y-6">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="calendar">
+            <BookingCalendar bookings={bookings ?? []} cars={cars ?? []} />
           </TabsContent>
 
           <TabsContent value="cars" className="space-y-4">

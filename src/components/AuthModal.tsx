@@ -6,10 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, LogIn } from "lucide-react";
+import { UserPlus, LogIn, AlertCircle, Clock } from "lucide-react";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[+]?[\d\s\-().]{7,15}$/;
+
+const ErrorAlert = ({ message }: { message: string }) => {
+  const isRateLimit = message.toLowerCase().includes("too many") || message.toLowerCase().includes("15 minutes");
+  return (
+    <div className={`flex items-start gap-3 rounded-lg px-4 py-3 text-sm animate-in fade-in-50 slide-in-from-top-2 duration-200 ${
+      isRateLimit
+        ? "bg-amber-500/10 border border-amber-500/30 text-amber-400"
+        : "bg-destructive/10 border border-destructive/30 text-destructive"
+    }`}>
+      {isRateLimit ? <Clock className="h-4 w-4 mt-0.5 shrink-0" /> : <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />}
+      <span>{message}</span>
+    </div>
+  );
+};
 
 const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const { login, register } = useAuth();
@@ -101,7 +115,7 @@ const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
                   {t('auth.forgotPassword') || 'Forgot password?'}
                 </button>
               </div>
-              {error && <p className="text-sm text-destructive animate-in fade-in-50 slide-in-from-top-2 duration-200">{error}</p>}
+              {error && <ErrorAlert message={error} />}
               <Button type="submit" className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
                 <LogIn className="w-4 h-4 mr-2" />
                 {loading ? "..." : t('auth.login')}
@@ -153,7 +167,7 @@ const AuthModal = ({ open, onClose }: { open: boolean; onClose: () => void }) =>
                 <Label htmlFor="confirm-password">{t('auth.confirmPassword')}</Label>
                 <Input id="confirm-password" name="confirm_password" type="password" placeholder={t('auth.confirmPassword')} required className="transition-all focus:scale-[1.02]" />
               </div>
-              {error && <p className="text-sm text-destructive animate-in fade-in-50 slide-in-from-top-2 duration-200">{error}</p>}
+              {error && <ErrorAlert message={error} />}
               {success && <p className="text-sm text-success animate-in fade-in-50 slide-in-from-top-2 duration-200">{success}</p>}
               <Button type="submit" className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]" disabled={loading}>
                 <UserPlus className="w-4 h-4 mr-2" />

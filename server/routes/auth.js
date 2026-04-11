@@ -1,10 +1,20 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { rateLimit, ipKeyGenerator } = require("express-rate-limit");
 const db = require("../db");
 const { SECRET } = require("../middleware/auth");
 
-router.post("/register", (req, res) => {
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: "Too many attempts, please try again in 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req)}_${req.body?.email || "unknown"}`,
+});
+
+router.post("/register", authLimiter, (req, res) => {
   const { email, password, first_name, last_name, phone, city } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password required" });
   if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters" });
@@ -22,7 +32,7 @@ router.post("/register", (req, res) => {
   res.status(201).json({ token, user });
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", authLimiter, (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password required" });
 
@@ -30,13 +40,10 @@ router.post("/login", (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: "Invalid email or password" });
 
-  // Check account status
-  if (user.account_status === 'suspended') {
+  if (user.account_status === "suspended")
     return res.status(403).json({ error: "Your account has been suspended. Please contact support." });
-  }
-  if (user.account_status === 'banned') {
+  if (user.account_status === "banned")
     return res.status(403).json({ error: "Your account has been permanently banned." });
-  }
 
   const { password: _, ...safeUser } = user;
   const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET, { expiresIn: "7d" });

@@ -5,6 +5,7 @@ const path = require("path");
 const { startReminderScheduler } = require("./services/reminderScheduler");
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({ origin: /^http:\/\/localhost:\d+$/, credentials: true }));
