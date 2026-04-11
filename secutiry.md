@@ -13,3 +13,13 @@ robots.txt — simple example:
 When Google searches the web, it sends a "bot" to visit every page of your site. Without robots.txt, it will try to visit and index /admin, /login, /my-bookings — meaning someone could literally Google "Sihabi Cars admin" and find your admin page URL. robots.txt just tells Google "don't go there".
 
 robots.txt — blocks /admin, /my-bookings, /profile, /login, /forgot-password, /reset-password from Google while allowing all public pages.
+
+
+
+
+
+
+When you move to real production hosting, we'll:
+Remove the frontend serving code from server/index.js
+Update CORS to point to your real frontend domain
+Deploy separately: Frontend on Vercel, Backend on proper server

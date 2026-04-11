@@ -8,7 +8,10 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({ origin: /^http:\/\/localhost:\d+$/, credentials: true }));
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? [process.env.FRONTEND_URL]
+  : [/^http:\/\/localhost:\d+$/];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -20,6 +23,16 @@ app.use("/api/users", require("./routes/users"));
 app.use("/api/contact", require("./routes/contact"));
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
+
+// Serve static frontend files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '..', 'dist')));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    }
+  });
+}
 
 // Start reminder scheduler
 try {
