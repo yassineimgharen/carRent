@@ -76,7 +76,7 @@ const ProfilePage = () => {
 
         {/* Profile card */}
         <div className="glass-card p-6 space-y-5">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-4">
               <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 <User className="h-7 w-7 text-primary" />
