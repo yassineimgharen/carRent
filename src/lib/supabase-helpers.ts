@@ -8,9 +8,6 @@ export type Car = {
   price_per_day: number;
   image_url: string | null;
   description: string | null;
-  description_fr: string | null;
-  description_ar: string | null;
-  description_en: string | null;
   seats: number;
   transmission: string;
   fuel_type: string;
