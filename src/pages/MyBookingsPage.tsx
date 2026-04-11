@@ -72,7 +72,7 @@ const MyBookingsPage = () => {
     <div className="min-h-screen">
       <Navbar />
       <div className="container pt-24 pb-16 space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-3xl font-bold">{t('profile.myBookings')}</h1>
           <Badge variant="secondary" className="text-sm">
             {bookings?.length || 0} {bookings?.length === 1 ? t('profile.booking') : t('profile.bookings')}
