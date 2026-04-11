@@ -38,7 +38,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/30">
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/30 rounded-none">
         <div className="container flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 font-display text-xl font-bold">
             <Car className="h-6 w-6 text-primary" />
