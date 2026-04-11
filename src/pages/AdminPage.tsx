@@ -603,7 +603,7 @@ const AdminPage = () => {
             </div>
 
             <Dialog open={customerInfoOpen} onOpenChange={setCustomerInfoOpen}>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="font-display">{t('admin.customerInfo')}</DialogTitle>
                 </DialogHeader>
