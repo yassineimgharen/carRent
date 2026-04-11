@@ -72,8 +72,12 @@ const BookingForm = ({ car }: { car: Car }) => {
       });
       toast.success("Booking submitted successfully!");
       
-      // Redirect to my bookings page
-      window.location.href = "/my-bookings";
+      // Redirect based on user role
+      if (user?.role === 'admin') {
+        window.location.href = "/profile";
+      } else {
+        window.location.href = "/my-bookings";
+      }
     } catch (error: any) {
       toast.error(error.message || "Failed to submit booking");
     } finally {
