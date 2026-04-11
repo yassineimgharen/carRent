@@ -1,4 +1,4 @@
-const BASE = "http://localhost:4000/api";
+const BASE = import.meta.env.PROD ? "/api" : "http://localhost:4000/api";
 
 const getToken = () => localStorage.getItem("token");
 
