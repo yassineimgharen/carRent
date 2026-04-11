@@ -184,7 +184,8 @@ const AdminPage = () => {
     
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/cars/upload", {
+      const baseUrl = import.meta.env.PROD ? "" : "http://localhost:4000";
+      const res = await fetch(`${baseUrl}/api/cars/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -193,7 +194,7 @@ const AdminPage = () => {
       if (!res.ok) throw new Error(data.error);
       
       const newImages = data.images.map((img: any) => ({ 
-        url: `http://localhost:4000${img.image_url}`,
+        url: img.image_url,
         filename: img.filename 
       }));
       setUploadedImages(prev => [...prev, ...newImages]);
