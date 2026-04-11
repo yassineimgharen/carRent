@@ -41,10 +41,7 @@ router.get("/", (req, res) => {
 
 router.get("/:id/images", (req, res) => {
   const images = db.prepare("SELECT * FROM car_images WHERE car_id = ? ORDER BY display_order ASC").all(req.params.id);
-  res.json(images.map(img => ({
-    ...img,
-    image_url: img.image_url.startsWith('http') ? img.image_url : `http://localhost:4000${img.image_url}`
-  })));
+  res.json(images);
 });
 
 router.get("/:id", (req, res) => {
@@ -54,11 +51,11 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", auth, adminOnly, (req, res) => {
-  const { name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured } = req.body;
+  const { name, brand, category, price_per_day, image_url, description, description_fr, description_ar, description_en, seats, transmission, fuel_type, is_available, is_featured } = req.body;
   if (!name || !brand || !category || !price_per_day) return res.status(400).json({ error: "Missing required fields" });
   const result = db.prepare(
-    "INSERT INTO cars (name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run(name, brand, category, price_per_day, image_url || null, description || null, seats || 5, transmission || "Automatic", fuel_type || "Gasoline", is_available !== false ? 1 : 0, is_featured ? 1 : 0);
+    "INSERT INTO cars (name, brand, category, price_per_day, image_url, description, description_fr, description_ar, description_en, seats, transmission, fuel_type, is_available, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  ).run(name, brand, category, price_per_day, image_url || null, description || null, description_fr || null, description_ar || null, description_en || null, seats || 5, transmission || "Automatic", fuel_type || "Gasoline", is_available !== false ? 1 : 0, is_featured ? 1 : 0);
   res.status(201).json(db.prepare("SELECT * FROM cars WHERE id = ?").get(result.lastInsertRowid));
 });
 
@@ -100,10 +97,10 @@ router.post("/save-images", auth, adminOnly, (req, res) => {
 router.put("/:id", auth, adminOnly, (req, res) => {
   const car = db.prepare("SELECT * FROM cars WHERE id = ?").get(req.params.id);
   if (!car) return res.status(404).json({ error: "Car not found" });
-  const { name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured } = req.body;
+  const { name, brand, category, price_per_day, image_url, description, description_fr, description_ar, description_en, seats, transmission, fuel_type, is_available, is_featured } = req.body;
   db.prepare(
-    "UPDATE cars SET name=?, brand=?, category=?, price_per_day=?, image_url=?, description=?, seats=?, transmission=?, fuel_type=?, is_available=?, is_featured=?, updated_at=datetime('now') WHERE id=?"
-  ).run(name ?? car.name, brand ?? car.brand, category ?? car.category, price_per_day ?? car.price_per_day, image_url ?? car.image_url, description ?? car.description, seats ?? car.seats, transmission ?? car.transmission, fuel_type ?? car.fuel_type, is_available !== undefined ? (is_available ? 1 : 0) : car.is_available, is_featured !== undefined ? (is_featured ? 1 : 0) : car.is_featured, req.params.id);
+    "UPDATE cars SET name=?, brand=?, category=?, price_per_day=?, image_url=?, description=?, description_fr=?, description_ar=?, description_en=?, seats=?, transmission=?, fuel_type=?, is_available=?, is_featured=?, updated_at=datetime('now') WHERE id=?"
+  ).run(name ?? car.name, brand ?? car.brand, category ?? car.category, price_per_day ?? car.price_per_day, image_url ?? car.image_url, description ?? car.description, description_fr ?? car.description_fr, description_ar ?? car.description_ar, description_en ?? car.description_en, seats ?? car.seats, transmission ?? car.transmission, fuel_type ?? car.fuel_type, is_available !== undefined ? (is_available ? 1 : 0) : car.is_available, is_featured !== undefined ? (is_featured ? 1 : 0) : car.is_featured, req.params.id);
   res.json(db.prepare("SELECT * FROM cars WHERE id = ?").get(req.params.id));
 });
 
