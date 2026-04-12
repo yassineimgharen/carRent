@@ -400,7 +400,7 @@ const AdminPage = () => {
                         <SelectContent>{CAR_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2"><Label>{t('admin.price')}/Day *</Label><Input type="number" value={formData.price_per_day} onChange={(e) => set("price_per_day", +e.target.value)} required /></div>
+                    <div className="space-y-2"><Label>{t('admin.price')}/Day *</Label><Input type="number" value={formData.price_per_day || ""} onFocus={(e) => { if (+e.target.value === 0) set("price_per_day", ""); }} onChange={(e) => set("price_per_day", e.target.value === "" ? 0 : +e.target.value)} required /></div>
                   </div>
                   <div className="space-y-2"><Label>{t('admin.imageUrl')}</Label><Input value={formData.image_url || ""} onChange={(e) => set("image_url", e.target.value)} placeholder="https://..." /></div>
                   <div className="space-y-2">
@@ -777,7 +777,7 @@ const AdminPage = () => {
                     <TableHead>{t('admin.role')}</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>{t('admin.bookingsCount')}</TableHead>
-                    <TableHead>{t('admin.totalSpent')}</TableHead>
+                    <TableHead className="whitespace-nowrap">{t('admin.totalSpent')}</TableHead>
                     <TableHead>{t('admin.joined')}</TableHead>
                     <TableHead className="text-right">{t('admin.actions')}</TableHead>
                   </TableRow>

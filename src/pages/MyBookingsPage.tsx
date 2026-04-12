@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Navigate } from "react-router-dom";
-import { Calendar, Car, CreditCard, DollarSign, Trash2, AlertCircle } from "lucide-react";
+import { Calendar, Car, CreditCard, DollarSign, Trash2, AlertCircle, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import {
@@ -53,6 +53,52 @@ const MyBookingsPage = () => {
 
   const handleCancelBooking = (bookingId: number) => {
     deleteMutation.mutate(bookingId);
+  };
+
+  const handlePrint = (b: any) => {
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(`
+      <html><head><title>Réservation #${b.id} - Sihabi Cars</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 40px; color: #111; }
+        h1 { color: #2563eb; margin-bottom: 4px; }
+        .subtitle { color: #666; margin-bottom: 32px; font-size: 14px; }
+        .section { border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .section h2 { font-size: 13px; text-transform: uppercase; color: #888; margin: 0 0 12px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .label { color: #666; }
+        .value { font-weight: 600; }
+        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #dbeafe; color: #1d4ed8; }
+      </style></head><body>
+      <h1>Sihabi Cars</h1>
+      <p class="subtitle">Confirmation de réservation</p>
+      <div class="section">
+        <h2>Détails de la réservation</h2>
+        <div class="row"><span class="label">ID Réservation</span><span class="value">#${b.id}</span></div>
+        <div class="row"><span class="label">Voiture</span><span class="value">${b.car_brand} ${b.car_name}</span></div>
+        <div class="row"><span class="label">Date début</span><span class="value">${b.start_date}</span></div>
+        <div class="row"><span class="label">Date fin</span><span class="value">${b.end_date}</span></div>
+        <div class="row"><span class="label">Total</span><span class="value">${b.total_price} DH</span></div>
+        <div class="row"><span class="label">Paiement</span><span class="value">${b.payment_method}</span></div>
+        <div class="row"><span class="label">Statut</span><span class="badge">${b.status}</span></div>
+      </div>
+      <div class="section">
+        <h2>Client</h2>
+        <div class="row"><span class="label">Nom</span><span class="value">${b.customer_name}</span></div>
+        <div class="row"><span class="label">Email</span><span class="value">${b.customer_email}</span></div>
+        ${b.customer_phone ? `<div class="row"><span class="label">Téléphone</span><span class="value">${b.customer_phone}</span></div>` : ""}
+        ${b.cin ? `<div class="row"><span class="label">CIN</span><span class="value">${b.cin}</span></div>` : ""}
+      </div>
+      <div class="footer">
+        Sihabi Cars • +212 661 604 965 • sihabi.cars@gmail.com<br/>
+        132 Rue Ahmed Zakaria, Agadir, Maroc
+      </div>
+      </body></html>
+    `);
+    win.document.close();
+    win.print();
   };
 
   const getStatusLabel = (status: string) => {
@@ -107,9 +153,14 @@ const MyBookingsPage = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Car className="h-5 w-5 text-primary" />
-                      <p className="font-display font-semibold text-xl">{b.car_brand} {b.car_name}</p>
+                    <div className="flex items-center justify-between sm:justify-start gap-2">
+                      <div className="flex items-center gap-2">
+                        <Car className="h-5 w-5 text-primary" />
+                        <p className="font-display font-semibold text-xl">{b.car_brand} {b.car_name}</p>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => handlePrint(b)}>
+                        <Printer className="h-4 w-4" />
+                      </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">Booking ID: #{b.id}</p>
                   </div>
