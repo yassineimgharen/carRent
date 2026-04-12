@@ -129,7 +129,7 @@ const MyBookingsPage = () => {
           <div className="glass-card p-12 text-center space-y-3">
             <Car className="h-16 w-16 mx-auto text-muted-foreground opacity-50" />
             <p className="text-muted-foreground text-lg">{t('profile.noBookings')}</p>
-            <p className="text-sm text-muted-foreground">Start exploring our cars and make your first reservation!</p>
+            <p className="text-sm text-muted-foreground">{t('profile.noBookingsSubtitle')}</p>
           </div>
         ) : (
           <motion.div 
