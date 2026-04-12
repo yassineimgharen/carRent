@@ -27,7 +27,9 @@ Deploy separately: Frontend on Vercel, Backend on proper server
 
 
 cd /goinfre/yaimghar/wheelie-happy-car
-# Add the database files
-git add server/wheelie.db server/wheelie.db-shm server/wheelie.db-wal
-# Commit with your data
-git commit -m "Save database with current data"
+# Stage only code files
+git add server/db.js server/routes/cars.js src/components/MyComponent.tsx
+# Commit
+git commit -m "feat: add new feature"
+# Push
+git push origin main

@@ -92,4 +92,4 @@ export const fetchAllUsers = () => api(`/users?t=${Date.now()}`);
 
 export const fetchAnalytics = () => api("/users/analytics");
 
-export const CAR_CATEGORIES = ["Renault", "Audi", "Volkswagen", "Skoda", "BMW", "Dacia", "Hyundai", "Peugeot"] as const;
+export const CAR_CATEGORIES = ["Renault", "Audi", "Volkswagen", "Skoda", "BMW", "Dacia", "Hyundai", "Peugeot", "Porche"] as const;

@@ -39,7 +39,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <div className="overflow-x-hidden">
+          <div>
             <BrowserRouter>
               <ScrollToTop />
               <FloatingButtons />

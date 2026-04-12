@@ -97,12 +97,14 @@
 
   html {
     overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body {
     @apply bg-background text-foreground font-body antialiased;
     width: 100%;
     touch-action: pan-y;
+    overflow-y: auto;
   }
 
   h1, h2, h3, h4, h5, h6 {
