@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light";
-const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({ theme: "dark", toggle: () => {} });
+const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({ theme: "light", toggle: () => {} });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) ?? "dark");
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) ?? "light");
 
   useEffect(() => {
     document.documentElement.classList.toggle("light", theme === "light");

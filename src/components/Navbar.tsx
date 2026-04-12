@@ -27,7 +27,7 @@ const Navbar = () => {
   const links = [
     { to: "/", label: t('nav.home') },
     { to: "/cars", label: t('nav.cars') },
-    ...(user && user.role !== "admin" ? [{ to: "/my-bookings", label: "My Bookings", icon: Calendar }] : []),
+    ...(user && user.role !== "admin" ? [{ to: "/my-bookings", label: t('profile.myBookings'), icon: Calendar }] : []),
     ...(user && user.role === "admin" ? [{ to: "/admin", label: t('nav.admin'), icon: LayoutDashboard }] : []),
   ];
 
