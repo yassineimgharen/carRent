@@ -1,9 +1,8 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useLanguage } from "@/hooks/use-language";
 
-// Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -13,8 +12,8 @@ L.Icon.Default.mergeOptions({
 
 const LocationMap = () => {
   const { t } = useLanguage();
-  // Agadir, Morocco - Your exact location
   const position: [number, number] = [30.4012715, -9.5770416];
+  const mapsUrl = `https://www.google.com/maps?q=${position[0]},${position[1]}`;
 
   return (
     <section className="container py-24">
@@ -22,12 +21,10 @@ const LocationMap = () => {
         <div className="text-center space-y-2">
           <p className="text-sm text-primary font-medium uppercase tracking-wider">{t('contact.findUs')}</p>
           <h2 className="font-display text-3xl md:text-4xl font-bold">{t('contact.location')}</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            {t('contact.visitText')}
-          </p>
+          <p className="text-muted-foreground max-w-2xl mx-auto">{t('contact.visitText')}</p>
         </div>
 
-        <div className="glass-card overflow-hidden rounded-xl">
+        <div className="glass-card overflow-hidden rounded-xl relative">
           <MapContainer
             center={position}
             zoom={13}
@@ -38,23 +35,20 @@ const LocationMap = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={position}>
-              <Popup>
-                <div className="text-center space-y-2">
-                  <p className="font-semibold">Sihabi Cars</p>
-                  <p className="text-sm text-muted-foreground">NATURAFRIKA, Agadir</p>
-                  <a
-                    href="https://www.google.com/maps?q=30.4012715,-9.5770416"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-2 px-3 py-1 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 transition-colors"
-                  >
-                    {t('contact.getDirections')}
-                  </a>
-                </div>
-              </Popup>
-            </Marker>
+            <Marker position={position} />
           </MapContainer>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-4 right-4 z-[1000] flex items-center gap-2 px-4 py-2.5 bg-white text-gray-900 text-sm font-semibold rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-200 whitespace-nowrap"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-4 w-4 flex-shrink-0" fill="none">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#EA4335"/>
+              <circle cx="12" cy="9" r="2.5" fill="white"/>
+            </svg>
+            {t('contact.getDirections')}
+          </a>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 text-center">
