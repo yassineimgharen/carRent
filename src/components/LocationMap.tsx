@@ -14,7 +14,7 @@ L.Icon.Default.mergeOptions({
 const LocationMap = () => {
   const { t } = useLanguage();
   // Agadir, Morocco - Your exact location
-  const position: [number, number] = [30.40607, -9.562928];
+  const position: [number, number] = [30.4012715, -9.5770416];
 
   return (
     <section className="container py-24">
@@ -41,10 +41,10 @@ const LocationMap = () => {
             <Marker position={position}>
               <Popup>
                 <div className="text-center space-y-2">
-                  <p className="font-semibold">DriveX Car Rental</p>
-                  <p className="text-sm text-muted-foreground">Agadir, Morocco</p>
+                  <p className="font-semibold">Sihabi Cars</p>
+                  <p className="text-sm text-muted-foreground">NATURAFRIKA, Agadir</p>
                   <a
-                    href="https://www.google.com/maps?q=30.40607,-9.562928"
+                    href="https://www.google.com/maps?q=30.4012715,-9.5770416"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block mt-2 px-3 py-1 bg-primary text-primary-foreground text-sm rounded-md hover:bg-primary/90 transition-colors"

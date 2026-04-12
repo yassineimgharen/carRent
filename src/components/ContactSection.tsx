@@ -78,8 +78,8 @@ const ContactSection = () => {
                 <div>
                   <p className="font-medium">{t('contact.address')}</p>
                   <p className="text-sm text-muted-foreground">
-                    شارع احمد زكرياء رقم 132 بلوك ابطيح تمديد الداخلة<br />
-                    Agadir, Morocco
+                    Haut Founty<br />
+                    Agadir 80000, Morocco
                   </p>
                 </div>
               </div>

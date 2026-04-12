@@ -314,8 +314,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Contact
     'contact.title': 'Contactez-nous',
     'contact.address': 'Adresse',
-    'contact.addressLine1': '132 Rue Ahmed Zakaria',
-    'contact.addressLine2': 'Bloc Abtih Extension Dakhla, Agadir',
+    'contact.addressLine1': 'Haut Founty',
+    'contact.addressLine2': 'Agadir 80000, Morocco',
     'contact.email': 'Email',
     'contact.hours': 'Heures d\'ouverture',
     'contact.location': 'Notre emplacement',
@@ -748,8 +748,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Contact
     'contact.title': 'اتصل بنا',
     'contact.address': 'العنوان',
-    'contact.addressLine1': 'شارع احمد زكرياء رقم 132',
-    'contact.addressLine2': 'بلوك ابطيح تمديد الداخلة، أكادير',
+    'contact.addressLine1': 'Haut Founty',
+    'contact.addressLine2': 'أكادير 80000، المغرب',
     'contact.email': 'البريد الإلكتروني',
     'contact.hours': 'ساعات العمل',
     'contact.location': 'موقعنا',
@@ -1182,8 +1182,8 @@ const translations: Record<Language, Record<string, string>> = {
     // Contact
     'contact.title': 'Contact Us',
     'contact.address': 'Address',
-    'contact.addressLine1': '132 Ahmed Zakaria Street',
-    'contact.addressLine2': 'Abtih Block Dakhla Extension, Agadir',
+    'contact.addressLine1': 'Haut Founty',
+    'contact.addressLine2': 'Agadir 80000, Morocco',
     'contact.email': 'Email',
     'contact.hours': 'Opening Hours',
     'contact.location': 'Our Location',
