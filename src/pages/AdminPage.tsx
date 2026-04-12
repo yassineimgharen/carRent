@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download, Ban, CheckCircle, XCircle, BarChart3, CalendarDays } from "lucide-react";
+import { Plus, Pencil, Trash2, Car as CarIcon, Eye, DollarSign, Users as UsersIcon, Calendar, TrendingUp, Mail, MessageSquare, Download, Ban, CheckCircle, XCircle, BarChart3, CalendarDays, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -603,35 +603,45 @@ const AdminPage = () => {
             </div>
 
             <Dialog open={customerInfoOpen} onOpenChange={setCustomerInfoOpen}>
-              <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="font-display">{t('admin.customerInfo')}</DialogTitle>
+              <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto print:max-h-none print:overflow-visible">
+                <DialogHeader className="print:mb-4">
+                  <div className="flex items-center justify-between">
+                    <DialogTitle className="font-display">{t('admin.customerInfo')}</DialogTitle>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => window.print()}
+                      className="print:hidden"
+                    >
+                      <Printer className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </DialogHeader>
                 {selectedBooking && (
-                  <div className="space-y-4">
-                    <div className="glass-card p-4 space-y-3">
+                  <div className="space-y-4 print:space-y-6">
+                    <div className="glass-card p-4 space-y-3 print:border-2 print:border-gray-300">
                       <h3 className="font-semibold text-sm text-muted-foreground uppercase">{t('admin.bookingDetails')}</h3>
                       <div className="space-y-2">
                         <div><span className="text-sm text-muted-foreground">{t('admin.bookingId')}:</span> <span className="font-medium">#{selectedBooking.id}</span></div>
                         <div><span className="text-sm text-muted-foreground">{t('admin.car')}:</span> <span className="font-medium">{selectedBooking.car_brand} {selectedBooking.car_name}</span></div>
                         <div><span className="text-sm text-muted-foreground">{t('admin.dates')}:</span> <span className="font-medium">{selectedBooking.start_date} → {selectedBooking.end_date}</span></div>
                         <div><span className="text-sm text-muted-foreground">{t('admin.totalPrice')}:</span> <span className="font-display font-semibold text-primary">{selectedBooking.total_price} {t('currency')}</span></div>
-                        <div><span className="text-sm text-muted-foreground">{t('admin.payment')}:</span> <Badge variant="outline" className="ml-2">{selectedBooking.payment_method}</Badge></div>
+                        <div><span className="text-sm text-muted-foreground">{t('admin.payment')}:</span> <Badge variant="outline" className="ml-2 print:border-2">{selectedBooking.payment_method}</Badge></div>
                       </div>
                     </div>
 
-                    <div className="glass-card p-4 space-y-3">
+                    <div className="glass-card p-4 space-y-3 print:border-2 print:border-gray-300">
                       <h3 className="font-semibold text-sm text-muted-foreground uppercase">{t('admin.contactInfo')}</h3>
                       <div className="space-y-2">
                         <div><span className="text-sm text-muted-foreground">{t('admin.name')}:</span> <span className="font-medium">{selectedBooking.customer_name}</span></div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between print:justify-start print:gap-2">
                           <div><span className="text-sm text-muted-foreground">{t('admin.emailLabel')}:</span> <span className="font-medium">{selectedBooking.customer_email}</span></div>
                           <button
                             onClick={() => {
                               const subject = `Booking #${selectedBooking.id} - ${selectedBooking.car_brand} ${selectedBooking.car_name}`;
                               window.open(`mailto:${selectedBooking.customer_email}?subject=${encodeURIComponent(subject)}`, '_blank');
                             }}
-                            className="h-8 w-8 bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow-md transition-all hover:scale-110"
+                            className="h-8 w-8 bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center shadow-md transition-all hover:scale-110 print:hidden"
                             style={{ borderRadius: '20%' }}
                             aria-label="Send Email"
                           >
@@ -642,9 +652,9 @@ const AdminPage = () => {
                           </button>
                         </div>
                         {selectedBooking.customer_phone && (
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between print:justify-start print:gap-2">
                             <div><span className="text-sm text-muted-foreground">{t('admin.phone')}:</span> <span className="font-medium">{selectedBooking.customer_phone}</span></div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 print:hidden">
                               <button
                                 onClick={() => {
                                   const phone = selectedBooking.customer_phone.replace(/[^0-9+]/g, '');
@@ -675,9 +685,9 @@ const AdminPage = () => {
                           </div>
                         )}
                         {selectedBooking.user_phone && !selectedBooking.customer_phone && (
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between print:justify-start print:gap-2">
                             <div><span className="text-sm text-muted-foreground">{t('admin.phone')}:</span> <span className="font-medium">{selectedBooking.user_phone}</span></div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 print:hidden">
                               <button
                                 onClick={() => {
                                   const phone = selectedBooking.user_phone.replace(/[^0-9+]/g, '');
@@ -717,7 +727,7 @@ const AdminPage = () => {
                     </div>
 
                     {selectedBooking.user_id && (
-                      <div className="glass-card p-4 space-y-3 border-primary/20">
+                      <div className="glass-card p-4 space-y-3 border-primary/20 print:border-2 print:border-gray-300">
                         <h3 className="font-semibold text-sm text-primary uppercase">{t('admin.registeredUser')}</h3>
                         <div className="space-y-2">
                           <div><span className="text-sm text-muted-foreground">{t('admin.accountName')}:</span> <span className="font-medium">{selectedBooking.user_first_name} {selectedBooking.user_last_name}</span></div>

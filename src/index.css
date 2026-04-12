@@ -271,4 +271,60 @@
       display: none;
     }
   }
+
+  /* Print Styles */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    
+    .print\:max-h-none,
+    .print\:max-h-none * {
+      visibility: visible;
+    }
+    
+    .print\:max-h-none {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    
+    /* Hide buttons and interactive elements */
+    button:not(.print\:block),
+    .print\:hidden {
+      display: none !important;
+    }
+    
+    /* Ensure proper spacing */
+    .print\:space-y-6 > * + * {
+      margin-top: 1.5rem;
+    }
+    
+    /* Print borders */
+    .print\:border-2 {
+      border-width: 2px !important;
+    }
+    
+    .print\:border-gray-300 {
+      border-color: #d1d5db !important;
+    }
+    
+    /* Remove shadows and effects for print */
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+    
+    /* Ensure black text on white background */
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    
+    /* Page breaks */
+    .glass-card {
+      page-break-inside: avoid;
+    }
+  }
 }
