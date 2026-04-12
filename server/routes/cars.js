@@ -53,10 +53,21 @@ router.get("/:id", (req, res) => {
 router.post("/", auth, adminOnly, (req, res) => {
   const { name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured } = req.body;
   if (!name || !brand || !category || !price_per_day) return res.status(400).json({ error: "Missing required fields" });
-  const result = db.prepare(
-    "INSERT INTO cars (name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  ).run(name, brand, category, price_per_day, image_url || null, description || null, seats || 5, transmission || "Automatic", fuel_type || "Gasoline", is_available !== false ? 1 : 0, is_featured ? 1 : 0);
-  res.status(201).json(db.prepare("SELECT * FROM cars WHERE id = ?").get(result.lastInsertRowid));
+  
+  try {
+    const result = db.prepare(
+      "INSERT INTO cars (name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).run(name, brand, category, price_per_day, image_url || null, description || null, seats || 5, transmission || "Automatic", fuel_type || "Gasoline", is_available !== false ? 1 : 0, is_featured ? 1 : 0);
+    
+    // Force WAL checkpoint to ensure data is written
+    db.pragma("wal_checkpoint(PASSIVE)");
+    
+    const car = db.prepare("SELECT * FROM cars WHERE id = ?").get(result.lastInsertRowid);
+    res.status(201).json(car);
+  } catch (error) {
+    console.error("Error creating car:", error);
+    res.status(500).json({ error: "Failed to create car" });
+  }
 });
 
 router.post("/upload", auth, adminOnly, upload.array("images", 10), (req, res) => {
@@ -98,10 +109,20 @@ router.put("/:id", auth, adminOnly, (req, res) => {
   const car = db.prepare("SELECT * FROM cars WHERE id = ?").get(req.params.id);
   if (!car) return res.status(404).json({ error: "Car not found" });
   const { name, brand, category, price_per_day, image_url, description, seats, transmission, fuel_type, is_available, is_featured } = req.body;
-  db.prepare(
-    "UPDATE cars SET name=?, brand=?, category=?, price_per_day=?, image_url=?, description=?, seats=?, transmission=?, fuel_type=?, is_available=?, is_featured=?, updated_at=datetime('now') WHERE id=?"
-  ).run(name ?? car.name, brand ?? car.brand, category ?? car.category, price_per_day ?? car.price_per_day, image_url ?? car.image_url, description ?? car.description, seats ?? car.seats, transmission ?? car.transmission, fuel_type ?? car.fuel_type, is_available !== undefined ? (is_available ? 1 : 0) : car.is_available, is_featured !== undefined ? (is_featured ? 1 : 0) : car.is_featured, req.params.id);
-  res.json(db.prepare("SELECT * FROM cars WHERE id = ?").get(req.params.id));
+  
+  try {
+    db.prepare(
+      "UPDATE cars SET name=?, brand=?, category=?, price_per_day=?, image_url=?, description=?, seats=?, transmission=?, fuel_type=?, is_available=?, is_featured=?, updated_at=datetime('now') WHERE id=?"
+    ).run(name ?? car.name, brand ?? car.brand, category ?? car.category, price_per_day ?? car.price_per_day, image_url ?? car.image_url, description ?? car.description, seats ?? car.seats, transmission ?? car.transmission, fuel_type ?? car.fuel_type, is_available !== undefined ? (is_available ? 1 : 0) : car.is_available, is_featured !== undefined ? (is_featured ? 1 : 0) : car.is_featured, req.params.id);
+    
+    // Force WAL checkpoint to ensure data is written
+    db.pragma("wal_checkpoint(PASSIVE)");
+    
+    res.json(db.prepare("SELECT * FROM cars WHERE id = ?").get(req.params.id));
+  } catch (error) {
+    console.error("Error updating car:", error);
+    res.status(500).json({ error: "Failed to update car" });
+  }
 });
 
 router.delete("/:id", auth, adminOnly, (req, res) => {

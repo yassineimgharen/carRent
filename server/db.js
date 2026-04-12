@@ -7,6 +7,33 @@ const db = new Database(path.join(__dirname, "wheelie.db"));
 
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
+db.pragma("synchronous = NORMAL");
+db.pragma("wal_autocheckpoint = 1000");
+
+// Force WAL checkpoint on startup to ensure data persistence
+db.pragma("wal_checkpoint(TRUNCATE)");
+
+// Periodic WAL checkpoint every 30 seconds
+setInterval(() => {
+  try {
+    db.pragma("wal_checkpoint(PASSIVE)");
+  } catch (err) {
+    console.error("WAL checkpoint error:", err);
+  }
+}, 30000);
+
+// Ensure proper cleanup on exit
+process.on("SIGINT", () => {
+  db.pragma("wal_checkpoint(TRUNCATE)");
+  db.close();
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  db.pragma("wal_checkpoint(TRUNCATE)");
+  db.close();
+  process.exit(0);
+});
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (

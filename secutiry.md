@@ -23,3 +23,11 @@ When you move to real production hosting, we'll:
 Remove the frontend serving code from server/index.js
 Update CORS to point to your real frontend domain
 Deploy separately: Frontend on Vercel, Backend on proper server
+
+
+
+cd /goinfre/yaimghar/wheelie-happy-car
+# Add the database files
+git add server/wheelie.db server/wheelie.db-shm server/wheelie.db-wal
+# Commit with your data
+git commit -m "Save database with current data"
